@@ -232,8 +232,8 @@ class phpLive{
         return false;
     }
     public function getCalledPlugin(){
-        $class = $this->getCalledClass();
-        $ini = $this->allPluginSettings();
+        $this->getCalledClass();
+        $this->allPluginSettings();
         //var_dump(get_class());
         print_r(debug_backtrace());
     }
@@ -390,7 +390,7 @@ class phpLive{
         if($data == null){
             $data = $this->content;
         }
-        $clean = preg_match("/\<title.*\>(.*)\<\/title\>/isU", $data, $matches);
+        preg_match("/\<title.*\>(.*)\<\/title\>/isU", $data, $matches);
         if(isset($matches[1]))
             $this->title = $matches[1];
         else
@@ -581,7 +581,6 @@ class phpLive{
                     $content = file_get_contents($content);
                 }
                 $iscomment = false;
-                $iscss = false;
                 $tag = "#0000ff";
                 $att = "#ff0000";
                 $val = "#8000ff";
@@ -649,7 +648,6 @@ class phpLive{
         $i=0;
         $state='selector';
         $prevState = "";
-        $newState=null;
         $tokenValue='';
         $commenting = false;
         $isvalue = false;
@@ -913,6 +911,7 @@ class phpLive{
             $this->filename = $filename;
         }
         $pi = (object)pathinfo($filename);
+		$info = array();
         $info['created'] = date ("Y-m-d H:i:s", filectime($this->filename));
         $info['modified'] = date ("Y-m-d H:i:s", filemtime($this->filename));
         $info['filesize'] = $this->fileSize($this->filename);
@@ -1063,7 +1062,6 @@ class phpLive{
  * are specified, the methods will not connect, and no queries can be made.
  */
     public function dbConnect($host = null, $username = null, $password = null, $database = null, $port = null){
-        $err = 0;
         $conn_id = $this->conn_id;
         if(is_array($host)){
             $username = $host["username"];
@@ -1105,7 +1103,7 @@ class phpLive{
     }
     public function dbReset($position = 0, $connection_id = 0){
         if(isset($this->db[$connection_id]))
-            $connection = $this->db[$connection_id];
+            $this->db[$connection_id];
         else
             return $this;
         if(function_exists("mysqli_data_seek"))
@@ -1335,7 +1333,7 @@ class phpLive{
  * on the server).
  */
     public function process($file){
-        $threads = $this->threadCount();
+        $this->threadCount();
         $new = $this->createEmptyThread();
         $this->threads[$new]['thread'] = fsockopen($this->host, $this->port);
         $this->threads[$new]['processing'] = true;
@@ -1369,7 +1367,7 @@ class phpLive{
         $this->functionName = __FUNCTION__;
         return $count;
     }
-    public function pollThread($thread, $output = false, $headers = false){
+    public function pollThread($thread, $output = false){
         if(is_object($thread)){
             $thread_id = $thread->thread_id;
         }elseif(is_int ($thread)){
@@ -1438,7 +1436,7 @@ class phpLive{
         }
         return $sock_id;
     }
-    public function say($buffer, $host = "localhost", $port = 5565, $socket_id = 0){
+    public function say($buffer, $host = "localhost", $port = 5565){
         $fp = fsockopen($host, $port);
         fwrite($fp, $buffer);
         fclose($fp);
@@ -1652,7 +1650,7 @@ class phpLive{
      * session key/value as your plugin, the other plugins session will be ignored, and the one
      * from the current working plugin will be returned.
      */
-    public function getSession($sessionKey, $default = false){
+    public function getSession($sessionKey, $default = ""){
         $this->startSession();
         $ini = $this->allPluginSettings();
         if(!is_array($ini)){
@@ -1672,7 +1670,9 @@ class phpLive{
         $this->functionName = __FUNCTION__;
         if(isset($_SESSION['phpLive'][$sessionKey])){
             $this->quickString = $_SESSION['phpLive'][$sessionKey];
-        }
+        }else{
+			$this->quickString = $default;
+		}
         return $this;
     }
     /*
@@ -1680,7 +1680,7 @@ class phpLive{
      */
     public function getSessions(){
         $this->startSession();
-        $ini = $this->allPluginSettings();
+        $this->allPluginSettings();
         $ret = array();
         $this->getCalledPlugin();
         /*foreach($_SESSION['phpLive'][$ini['sessionRef']] as $key => $val){
@@ -1753,7 +1753,7 @@ class phpLive{
     public function convertSmart($string = null){
         if($string == null)
             $string = $this->quickString;
-        $search = array(chr(145),"‘",chr(146),"’",chr(147),"“",chr(148),"”",chr(151),"—",chr(150),"–",chr(133),"…",chr(149),"•");
+        $search = array(chr(145),"‘",chr(146),"’",chr(147),"“",chr(148),"�?",chr(151),"—",chr(150),"–",chr(133),"…",chr(149),"•");
         $replace = array("'","'","'","'",'"','"','"','"','--','--','-','-','...','...',"&bull;","&bull;");
         $this->quickString = str_replace($search, $replace, $string);
         $this->functionName = __FUNCTION__;
@@ -2163,7 +2163,7 @@ class phpLive{
     public function date($date = null){
         if(is_null($date))
             $date = $this->now();
-        if(!is_int($var)){
+        if(!is_int($date)){
             $date = strtotime($date);
         }
         $this->functionName = __FUNCTION__;
@@ -2233,7 +2233,7 @@ class phpLive{
     public function minute($date = null){
         if(is_null($date))
             $date = $this->now();
-        if(!is_int($var)){
+        if(!is_int($date)){
             $date = strtotime($date);
         }
         $this->functionName = __FUNCTION__;
@@ -2247,7 +2247,7 @@ class phpLive{
     public function second($date = null){
         if(is_null($date))
             $date = $this->now();
-        if(!is_int($var)){
+        if(!is_int($date)){
             $date = strtotime($date);
         }
         $this->functionName = __FUNCTION__;
