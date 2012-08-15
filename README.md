@@ -15,4 +15,4 @@ Tutorial
 
 For now, the tutorial can also be found on the website:
 
-http://phplive.org/tuts/Introduction/MyFirstApplication.php
+http://phplive.org/tuts/Introduction/LoadingPhplive.php
