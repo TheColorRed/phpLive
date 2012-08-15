@@ -685,7 +685,7 @@ class phpLive{
                         $tokenValue = "";
                         $i++;
                     }
-                    if($css[$i].$css[$i+1] == "/*" && !$commenting){
+                    if(isset($css[$i+1]) && $css[$i].$css[$i+1] == "/*" && !$commenting){
                         $commenting = true;
                         $prevState = $state;
                         $state = "comment";
@@ -710,7 +710,7 @@ class phpLive{
                             }
                         }
                     }
-                    if($css[$i].$css[$i+1] == "*/" && $commenting){
+                    if(isset($css[$i+1]) && $css[$i].$css[$i+1] == "*/" && $commenting){
                         $commenting = false;
                         $tokens[] = array('type' => $state, 'value' => $tokenValue."*/");
                         $state = $prevState;
@@ -1370,7 +1370,7 @@ class phpLive{
     public function pollThread($thread, $output = false){
         if(is_object($thread)){
             $thread_id = $thread->thread_id;
-        }elseif(is_int ($thread)){
+        }elseif(is_int($thread)){
             $thread_id = $thread;
         }else{
             return false;
@@ -1388,25 +1388,26 @@ class phpLive{
             return false;
         }
         if(is_resource($pointer)){
+            $opt = fread($pointer, 10000);
             if(feof($pointer)){
                 fclose($pointer);
                 $this->exit[] = $pid;
                 $this->threads[$pid]['processing'] = false;
                 return false;
             }
-        }
-        if(is_resource($pointer)){
-            $opt = fread($pointer, 10000);
             if($output){
                 echo $opt;
             }
-        }
+        }else{
+			$this->threads[$pid]['processing'] = false;
+			return false;
+		}
         $this->functionName = __FUNCTION__;
         return $this;
     }
-    public function poll($output = false, $headers = false){
+    public function poll($output = false){
         foreach($this->threads as $thread){
-            $this->pollThread($thread['thread_id'], $output, $headers);
+            $this->pollThread($thread['thread_id'], $output);
         }
         $processing = false;
         foreach($this->threads as $thread){
@@ -1418,7 +1419,7 @@ class phpLive{
         $this->processing = $processing;
         if(count($this->threads) > 0){
             $this->functionName = __FUNCTION__;
-            return $this;
+            return true;
         }
         return false;
     }
@@ -1753,7 +1754,7 @@ class phpLive{
     public function convertSmart($string = null){
         if($string == null)
             $string = $this->quickString;
-        $search = array(chr(145),"‘",chr(146),"’",chr(147),"“",chr(148),"�?",chr(151),"—",chr(150),"–",chr(133),"…",chr(149),"•");
+        $search = array(chr(145),"‘",chr(146),"’",chr(147),"“",chr(148),"�?",chr(151),"—",chr(150),"–",chr(133),"…",chr(149),"•");
         $replace = array("'","'","'","'",'"','"','"','"','--','--','-','-','...','...',"&bull;","&bull;");
         $this->quickString = str_replace($search, $replace, $string);
         $this->functionName = __FUNCTION__;

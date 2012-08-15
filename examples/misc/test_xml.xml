@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<root>
+	<!--
+	People who are 25 years old
+	-->
+	<names age="25">
+		<name>Ryan</name>
+		<name>Bill</name>
+		<name>Bob</name>
+	</names>
+	<!-- People who are 45 years old -->
+	<names age="45">
+		<name>Roy</name>
+		<name>Jill</name>
+		<name>Jimmy</name>
+	</names>
+</root>

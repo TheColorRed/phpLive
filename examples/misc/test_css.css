@@ -1,0 +1,48 @@
+body{
+	font-size: 12px;
+	color: #ffffff;
+	background-color: #000000;
+	background-image: url("/images/test.png");
+}
+
+#testID{color: green;}
+/*
+.display{
+	display: block;
+}
+*/
+.display-none{
+	display: none;
+}
+
+a.link{
+	color: red;
+	text-decoration: none;
+}
+
+a.link:hover{
+	text-decoration: underline;
+}
+
+.pa{
+	color: red;
+}
+a{
+	color: #ff0000;
+}
+
+*{
+	font-size: 12px;
+}
+
+div>a{
+	padding: 10px;
+}
+
+[lang=en]{
+	color: red;
+}
+
+p:lang(it){
+	color: blue;
+}
