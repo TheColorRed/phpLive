@@ -119,7 +119,7 @@ class phpLive{
     public $list             = array();
     public $post             = array();
     public $functionName     = null;
-    public $quickString      = "";
+    public $string      = "";
 
     public function __construct(){
         $this->location = dirname(__FILE__);
@@ -192,7 +192,7 @@ class phpLive{
                 if(is_array($this->list))
                     $opt = implode("", $this->list);
                 else
-                    $opt = $opt = $this->quickString;
+                    $opt = $opt = $this->string;
                 break;
             case "qRemove":
             case "qAdd":
@@ -200,7 +200,7 @@ class phpLive{
                 parse_str($this->qString(), $this->urlQuery);
                 break;
             default:
-                $opt = $this->quickString;
+                $opt = $this->string;
                 break;
         }
         return (string)$opt;
@@ -210,41 +210,87 @@ class phpLive{
         return $this->__tostring();
     }
 
+    /**
+     *
+     * @param string $string
+     * @return \phpLive
+     *
+     * Converts an input string to lowercase.
+     * If no input string is given, use the global string
+     */
     public function toLower($string = null){
         if(is_string($string))
-            $this->quickString = $string;
-        $this->quickString = strtolower($this->quickString);
+            $this->string = $string;
+        $this->string = strtolower($this->string);
         $this->functionName = __FUNCTION__;
         return $this;
     }
 
+    /**
+     *
+     * @param string $string
+     * @return \phpLive
+     *
+     * Converts an input string to uppercase
+     * If no input string is given, use the global string
+     */
     public function toUpper($string = null){
         if(is_string($string))
-            $this->quickString = $string;
-        $this->quickString = strtoupper($this->quickString);
+            $this->string = $string;
+        $this->string = strtoupper($this->string);
         $this->functionName = __FUNCTION__;
         return $this;
     }
 
+    /**
+     *
+     * @return int
+     *
+     * Takes the gloabl string and retuns it as an int
+     */
     public function toInt(){
         return (int)$this->__tostring();
     }
 
+    /**
+     *
+     * @return boolean
+     *
+     * Takes the global string and returns it as a boolean
+     */
     public function toBool(){
         return (bool)$this->__tostring();
     }
 
+    /**
+     *
+     * @param string $string
+     * @return string
+     *
+     *
+     */
     public function string(&$string = null){
         if($string != null)
             $string = $string;
-        return $this->quickString;
+        return $this->string;
     }
 
+    /**
+     * @return string
+     *
+     * Returns the current phpLive version
+     */
     public function version(){
         $this->functionName = __FUNCTION__;
         echo $this->version;
     }
 
+    /**
+     *
+     * @return string
+     *
+     * Gets the class that called this method
+     */
     public function getCalledClass(){
         if(function_exists('get_called_class')){
             return get_called_class();
@@ -254,9 +300,14 @@ class phpLive{
         $this->functionName = __FUNCTION__;
         if(isset($t['object']) && $t['object'] instanceof $t['class'])
             return get_class($t['object']);
-        return false;
+        return "";
     }
 
+    /**
+     * Not in use
+     *
+     * Should return which plugin called this method
+     */
     public function getCalledPlugin(){
         $this->getCalledClass();
         $this->allPluginSettings();
@@ -264,11 +315,30 @@ class phpLive{
         print_r(debug_backtrace());
     }
 
+    /**
+     *
+     * @param object $class
+     * @return \phpLive
+     *
+     * Gets the number of methods within an object
+     */
     public function numMethods($class){
-        $this->quickString = count(get_class_methods($class));
+        $this->functionName = __FUNCTION__;
+        $this->string = count(get_class_methods($class));
         return $this;
     }
 
+    /**
+     *
+     * @param string $class
+     * @param array $info
+     * @return boolean
+     *
+     * Giving a class name and ini settings for a plugin
+     * This class will load the desired class into phpLive.
+     * The class is then saved as so:
+     *      $this->$instance = new $class();
+     */
     public function loadPlugin($class, $info){
         $info = (object)$info;
         $file = $this->location."/plugins/".$info->root."/".$info->fileName;
@@ -284,9 +354,18 @@ class phpLive{
         return false;
     }
 
-    public function loadPlugins($loadPlugins = null){
+    /**
+     *
+     * @param string|array $loadPlugins
+     * @param string $separator
+     * @return boolean
+     *
+     * If a string is given it converts it to an array using a comma separator by default
+     * Once the array is passed in or built it loads the plugin using $this->loadPlugin()
+     */
+    public function loadPlugins($loadPlugins = null, $separator = ","){
         if(is_string($loadPlugins)){
-            $loadPlugins = explode(",", $loadPlugins);
+            $loadPlugins = explode($separator, $loadPlugins);
         }
         if(!is_array($loadPlugins) && $loadPlugins != null){
             return false;
@@ -311,6 +390,12 @@ class phpLive{
         return false;
     }
 
+    /**
+     *
+     * @return boolean
+     *
+     * Gets the settings for all plugins
+     */
     public function allPluginSettings(){
         $this->functionName = __FUNCTION__;
         if(empty($this->location))
@@ -322,6 +407,12 @@ class phpLive{
             return false;
     }
 
+    /**
+     *
+     * @param string $class
+     * @param boolean $return_object
+     * @return object|array
+     */
     public function pluginSettings($class = null, $return_object = true){
         $ini   = $this->allPluginSettings();
         if($class == null)
@@ -339,11 +430,14 @@ class phpLive{
         var_dump(get_class_vars($object));
     }*/
 
-    /*
-     * HTTP Methods
-     */
-    /*
-     * get_http gets a page from the web, and saves information into its parameters.
+    /**
+     *
+     * @param string $url
+     * @param type $other_params
+     * @return \phpLive
+     *
+     * Gets a page from the web, and saves information into its parameters.
+     *
      * $this->endingUrl the final url when the page was loaded (This can be different from your start url due to http redirects)
      * $this->httpCode is the code in wich it returned (200, 400, 500, etc)
      * $this->loadTime is the time it took for the page to load fully
@@ -352,11 +446,10 @@ class phpLive{
      * $this->cleanData the cleaned up version of content
      * $this->links an array of links (other than javascript links) that were found on the page
      */
-
     public function getHttp($url = null, $other_params = null){
         if($url == null){
-            if(filter_var($this->quickString, FILTER_VALIDATE_URL)){
-                $this->url = $this->quickString;
+            if(filter_var($this->string, FILTER_VALIDATE_URL)){
+                $this->url = $this->string;
             }
         }else{
             $this->url = $url;
@@ -386,26 +479,23 @@ class phpLive{
         $this->httpCode = $this->info->http_code;
         $this->loadTime = $this->info->total_time;
         curl_close($this->ch);
-        $this->quickString = $this->content;
+        $this->string = $this->content;
         $this->functionName = __FUNCTION__;
         return $this;
     }
 
-    /*
-     * String methods
+    /**
+     *
+     * @param string $data
+     * @return \phpLive
+     *
+     * Cleans an html page leaving only the text that is displayed on the page.
+     * If no input data is given use the global string
      */
-    /*
-     * returns a cleaned up version of $this->content, meaning:
-     * - Removes Javascript
-     * - Removes comments
-     * - Removes CSS
-     * - Removes HTML
-     * Finally, a clean version of an html page is returned
-     */
-
     public function getCleanData($data = null){
-        if($data == null)
-            $data  = $this->quickString;
+        if($data == null){
+            $data  = $this->string;
+        }
         $clean = preg_replace("/\<(script|style).*\>.*\<\/(script|style)\>/isU", " ", $data);
         $clean = preg_replace("/\<title.*\>.*\<\/title\>/isU", " ", $clean);
         $clean = preg_replace("/\<\!--.*\--\>/isU", " ", $clean);
@@ -416,19 +506,22 @@ class phpLive{
         $clean = $this->convertSmart($clean);
         $clean = trim($clean);
         $this->cleanData = $clean;
-        $this->quickString = $clean;
+        $this->string = $clean;
         $this->functionName = __FUNCTION__;
         return $this;
     }
 
-    /*
-     * Gets the page title of the html that is saved in $this->content
-     * if no title is found, we return false
+    /**
+     *
+     * @param string $data
+     * @return boolean|\phpLive
+     *
+     * Gets the title from an HTML string.
+     * If no data is pass in, use the global string
      */
-
     public function getTitle($data = null){
         if($data == null){
-            $data = $this->content;
+            $data = $this->string;
         }
         preg_match("/\<title.*\>(.*)\<\/title\>/isU", $data, $matches);
         if(isset($matches[1]))
@@ -436,7 +529,7 @@ class phpLive{
         else
             return false;
         $this->list = $this->title;
-        $this->quickString = $this->title;
+        $this->string = $this->title;
         $this->functionName = __FUNCTION__;
         return $this;
     }
@@ -446,9 +539,17 @@ class phpLive{
      * if $data is a string, the new internal data value will be set to that, and this method will search that
      */
 
+    /**
+     *
+     * @param string $data
+     * @return \phpLive
+     *
+     * Gets all the non JavaScript links on the page
+     * If no data is passed, use the global string
+     */
     public function getLinks($data = null){
         if($data == null){
-            $data = $this->content;
+            $data = $this->string;
         }
         preg_match_all("/\<a.+?href=(\"|')(?!javascript:|#)(.+?)(\"|')/i", $data, $matches);
         $this->links = $matches[2];
@@ -457,14 +558,17 @@ class phpLive{
         return $this;
     }
 
-    /*
-     * mkstr (Make String) will take a formatted string and make a nice string out of it.
-     * For example:
-     * echo mkstr("%Y-%m-%d_rand(10).%x"); // prints 2011-07-13_ceffe67048.1310587480
-     * The above out put looks like this:
-     * Year-Month-Day_Random10.UnixTime
+    /**
+     *
+     * @param string $format
+     * @return \phpLive
+     *
+     * Make a string based on the format provided
+     *      %x = Unix Timestamp
+     *      accepts php dates (Y-m-d) prefixed with a % (example: %Y-%m-%d)
+     *      rand(#) = a random set of characters a-zA-Z0-9 (example: rand(5) = j4Bn6)
+     *      /hash = This comes very last. replace hash with the hash of your choosing (example: rand(5)%x/md5 = c5d45fc6350db247f9d3de8e6ec8d98e)
      */
-
     public function mkstr($format){
         $name = preg_replace("/%x/", time(), $format);
         $name = preg_replace("/(%([a-zA-Z])){1}/e", 'date("$2")', $name);
@@ -472,7 +576,7 @@ class phpLive{
             $total   = $matches[1];
             $str     = "";
             $letters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890";
-            for($i       = 0; $i < $total; $i++){
+            for($i = 0; $i < $total; $i++){
                 $pos  = mt_rand(0, strlen($letters));
                 $str .= $letters[$pos];
             }
@@ -484,30 +588,43 @@ class phpLive{
                 eval('$name = hash("'.$type.'", $name);');
             }
         }
-        $this->quickString = $name;
+        $this->string = $name;
         $this->functionName = __FUNCTION__;
         return $this;
     }
 
+    /**
+     *
+     * @param mixed $content
+     * @param string $type
+     * @return \phpLive
+     *
+     * convert a string to a to a hash value
+     */
     public function hash($content = null, $type = 'md5'){
         $this->functionName = __FUNCTION__;
         if($content == null)
-            $content = $this->quickString;
+            $content = $this->string;
         if(in_array($type, hash_algos())){
-            $this->quickString = hash($type, $content);
-            return $this;
+            $this->string = hash($type, $content);
         }
-        return false;
+        return $this;
     }
 
-    /*
-     * get_between gets values between a starting value and ending value.
-     * $data_type defines the type of data that will be passed to it (DATA_HTML or DATA_CLEAN)
-     * $include_start_end if it is set to false, $start and $end will NOT be in the returned result, if set to ture, it will
-     * $htmlFormat if set to false the returned result will NOT be formatted html, but html entities otherwise it will return as html
+    /**
+     *
+     * @param string $start
+     * @param string $end
+     * @param string $data
+     * @param long $dataType
+     * @param boolean $include_start_end
+     * @param boolean $htmlFormat
+     * @return \phpLive
+     *
+     * Puts a list of found values that were found between start and end into the global list
      */
-
     public function getBetween($start, $end, $data = null, $dataType = DATA_HTML, $include_start_end = false, $htmlFormat = false){
+        $this->functionName = __FUNCTION__;
         $start = preg_quote($start, "/");
         $end   = preg_quote($end, "/");
         if($data == null){
@@ -516,7 +633,7 @@ class phpLive{
             elseif($dataType == DATA_HTML)
                 $data   = $this->content;
             else
-                return false;
+                return $this;
         }
         $good   = (bool)preg_match_all($search = "/$start(.+)$end/uisU", $data, $matches);
         $ret    = array();
@@ -543,25 +660,41 @@ class phpLive{
                 }
             }
             $this->list = $ret;
-            $this->functionName = __FUNCTION__;
             return $this;
         }
-        return false;
+        return $this;
     }
 
+    /**
+     *
+     * @param string $glue
+     * @param array $array
+     * @return \phpLive
+     *
+     * Exact same thing as implode()
+     * If no array is given, use the global list
+     */
     public function implode($glue = " ", $array = null){
         if($array == null)
             $array = $this->list;
         if(!is_array($array))
-            return false;
-        $this->quickString = implode($glue, $array);
+            return $this;
+        $this->string = implode($glue, $array);
         $this->functionName = __FUNCTION__;
         return $this;
     }
 
+    /**
+     *
+     * @param int $length
+     * @param type $difference
+     * @param type $end
+     * @param type $string
+     * @return \phpLive
+     */
     public function maxlen($length, $difference = 3, $end = "...", $string = null){
         if($string == null)
-            $string   = $this->quickString;
+            $string   = $this->string;
         $length   = (int)$length;
         $words    = explode(" ", $string);
         $numwords = count($words);
@@ -580,53 +713,119 @@ class phpLive{
             }
             $length += $difference;
         }
-        $this->quickString = implode(" ", $new);
+        $this->string = implode(" ", $new);
         if($length < $numwords)
-            $this->quickString .= $end;
+            $this->string .= $end;
         return $this;
     }
 
-    public function spToTab($string = null, $spaces = 4){
+    /**
+     *
+     * @param string $string
+     * @param string $spaces
+     * @return \phpLive
+     *
+     * Converts spaces to tabs
+     */
+    public function spToTab($spaces = 4, $string = null){
         if($string == null)
-            $string = $this->quickString;
-        $this->quickString = preg_replace("/(&nbsp;){".$spaces."}| {".$spaces."}/", "\t", $string);
+            $string = $this->string;
+        $this->string = preg_replace("/(&nbsp;){".$spaces."}| {".$spaces."}/", "\t", $string);
         $this->functionName = __FUNCTION__;
         return $this;
     }
 
-    public function tabToSp($string = null, $spaces = 4){
+    /**
+     *
+     * @param string $string
+     * @param string $spaces
+     * @return \phpLive
+     *
+     * Converts tabs to spaces
+     */
+    public function tabToSp($spaces = 4, $string = null){
         if($string == null)
-            $string = $this->quickString;
-        $this->quickString = preg_replace("/\t/", str_repeat("&nbsp;", $spaces), $string);
+            $string = $this->string;
+        $this->string = preg_replace("/\t/", str_repeat("&nbsp;", $spaces), $string);
         $this->functionName = __FUNCTION__;
         return $this;
     }
 
+    /**
+     *
+     * @param string $string
+     * @param long $input
+     * @return \phpLive
+     *
+     * Counts the number of lines in a string or file.
+     * INPUT_STRING uses a string as the input type
+     * INPUT_FILE use the string as the file name to read
+     */
     public function lineCount($string = null, $input = INPUT_STRING){
         if($input == INPUT_STRING){
             if($string == null)
-                $string = $this->quickString;
+                $string = $this->string;
         }
         if($input == INPUT_FILE)
             $string = file_get_contents($string);
-        $this->quickString = count(explode("\n", $string));
+        $this->string = count(explode("\n", $string));
         $this->functionName = __FUNCTION__;
         return $this;
     }
 
+    /**
+     *
+     * @param string $filename
+     * @param long $highlight
+     * @return \phpLive
+     *
+     * Highlights the contents of a file
+     */
+    public function hilightFile($filename, $highlight = HIGHLIGHT_PHP){
+        $this->highlight($filename, $highlight, INPUT_FILE);
+        $this->functionName = __FUNCTION__;
+        return $this;
+    }
+
+    /**
+     *
+     * @param string $string
+     * @param type $highlight
+     * @return \phpLive
+     *
+     * Highlights the contents of a string passed in
+     */
+    public function higlightString($string = null, $highlight = HIGHLIGHT_PHP){
+        if($string === null){
+            $string = $this->string;
+        }
+        $this->highlight($string, $highlight, INPUT_STRING);
+        $this->functionName = __FUNCTION__;
+        return $this;
+    }
+
+    /**
+     *
+     * @param type $content
+     * @param type $highlight
+     * @param type $input
+     * @return \phpLive
+     *
+     * Syntax highlights php/html/css
+     */
     public function highlight($content = null, $highlight = HIGHLIGHT_PHP, $input = INPUT_STRING){
         if($content == null)
-            $content = $this->quickString;
-        $this->quickString = "";
+            $content = $this->string;
+        $this->string = "";
         switch($highlight){
             case HIGHLIGHT_PHP:
                 if($input == INPUT_STRING){
-                    $this->quickString = highlight_string($content, true);
+                    $this->string = highlight_string($content, true);
                 }elseif($input == INPUT_FILE){
                     if(is_file($content))
-                        $this->quickString = highlight_file($content, true);
+                        $this->string = highlight_file($content, true);
                     else
-                        return false;
+                        return $this;
                 }
                 break;
             case HIGHLIGHT_HTML:
@@ -679,13 +878,13 @@ class phpLive{
                     }
                     $iscomment = !$iscomment;
                 }
-                $this->quickString = $tmpStr;
+                $this->string = $tmpStr;
                 break;
             case HIGHLIGHT_CSS:
                 if($input == INPUT_FILE)
-                    $this->quickString = file_get_contents($content);
+                    $this->string = file_get_contents($content);
                 else
-                    $this->quickString = $content;
+                    $this->string = $content;
                 $this->highlightCSS();
                 break;
         }
@@ -693,9 +892,17 @@ class phpLive{
         return $this;
     }
 
+    /**
+     *
+     * @param string $css
+     * @param boolean $pre
+     * @return \phpLive
+     *
+     * This is a css lexer that tokenizes and colorizes css
+     */
     public function highlightCSS($css = null, $pre = false){
         if($css == null)
-            $css    = $this->quickString;
+            $css    = $this->string;
         $this->functionName = __FUNCTION__;
         $tokens = array();
         $len        = strlen($css);
@@ -787,7 +994,7 @@ class phpLive{
         if(!empty($tokenValue)){
             $tokens[] = array('type'  => $state, 'value' => $tokenValue);
         }
-        $this->quickString = "";
+        $this->string = "";
         $styles = array(
             'selector'      => 'font-weight: bold;color: #007c00',
             'ruleset'       => 'color: #0000ff;',
@@ -798,21 +1005,32 @@ class phpLive{
             'string'        => 'color: #ce7b00;'
         );
         if((bool)$pre)
-            $this->quickString .= "<pre>";
-        $this->quickString .= "<span style=\"color: #000000;\">";
+            $this->string .= "<pre>";
+        $this->string .= "<span style=\"color: #000000;\">";
         foreach($tokens as $tok){
             $style = $styles[$tok['type']];
-            $this->quickString .= '<span style="'.$style.'">'.$tok['value'].'</span>';
+            $this->string .= '<span style="'.$style.'">'.$tok['value'].'</span>';
         }
-        $this->quickString .= "</span>";
+        $this->string .= "</span>";
         if((bool)$pre)
-            $this->quickString .= "</pre>";
+            $this->string .= "</pre>";
         return $this;
     }
 
+    /**
+     *
+     * @param string $string
+     * @param int $max
+     * @param int $min_len
+     * @return \phpLive
+     *
+     * Finds words found in a string and gives back an array with the most popular first
+     * $max is the limit to the number of results to return. Setting to 5 would return the top 5 words found
+     * $min_len is the minimum length a string must be to qualify to ignore words such as: a, in, the
+     */
     public function commonWords($string = null, $max = -1, $min_len = 4){
         if($string == null)
-            $string  = $this->quickString;
+            $string  = $this->string;
         $string  = $this->getCleanData()->remove(null, REMOVE_SYMBOL)->remove(null, REMOVE_NUMBER)->toString();
         $words   = explode(" ", $string);
         $wordlst = array();
@@ -833,10 +1051,17 @@ class phpLive{
         return $this;
     }
 
+    /**
+     *
+     * @param string $string
+     * @return \phpLive
+     *
+     * Convert a windows formatted string to unix formatted string
+     */
     public function unixFormat($string = null){
         if($string == null)
-            $string = $this->quickString;
-        $this->quickString = preg_replace("/\r\n/", "\n", $string);
+            $string = $this->string;
+        $this->string = preg_replace("/\r\n/", "\n", $string);
         $this->functionName = __FUNCTION__;
         return $this;
     }
@@ -845,6 +1070,14 @@ class phpLive{
      * File Methods
      */
 
+    /**
+     *
+     * @param string $filename
+     * @param string $mode
+     * @return \phpLive
+     *
+     * Opens a file for reading
+     */
     public function open($filename, $mode = 'rb'){
         $this->close();
         $this->filename = $filename;
@@ -853,6 +1086,12 @@ class phpLive{
         return $this;
     }
 
+    /**
+     *
+     * @return \phpLive
+     *
+     * Closes an open file
+     */
     public function close(){
         if(is_resource($this->handle)){
             fclose($this->handle);
@@ -860,23 +1099,39 @@ class phpLive{
             $this->functionName = __FUNCTION__;
             return $this;
         }
-        return false;
+        return $this;
     }
 
+    /**
+     *
+     * @param string $filename
+     * @return \phpLive
+     *
+     * Reads a file into the global string
+     */
     public function read($filename){
         $this->open($filename);
-        $this->quickString = fread($this->handle, filesize($filename));
+        $this->string = fread($this->handle, filesize($filename));
         $this->functionName = __FUNCTION__;
         return $this;
     }
 
-    public function save($filename, $content = '', $overwrite = true){
+    /**
+     *
+     * @param string $filename
+     * @param string $content
+     * @param boolean $overwrite
+     * @return \phpLive
+     *
+     * Saves a file onto the server
+     */
+    public function save($filename, $content = null, $overwrite = true){
         $this->open($filename, 'wb');
         if($content == PHP_TMPFILE){
             $this->content = file_get_contents($this->tmpFile);
         }else{
-            if(!empty($content))
-                $this->content = $content;
+            if($content === null)
+                $this->string = $content;
         }
         if(!$overwrite){
             while(is_file($filename)){
@@ -893,64 +1148,75 @@ class phpLive{
         }
         $ret = fwrite($this->handle, $this->content);
         if($ret === false)
-            return false;
+            return $this;
         $this->functionName = __FUNCTION__;
-        $this->quickString = $this->content;
+        $this->string = $this->content;
         return $this;
     }
 
-    public function append($filename = null, $content = ''){
+    /**
+     *
+     * @param string $filename
+     * @param string $content
+     * @return \phpLive
+     *
+     * Appends content to the end of a file
+     */
+    public function append($filename = null, $content = null){
         if(is_string($filename)){
             $this->filename = $filename;
         }
         $this->open($this->filename, 'ab');
-        if(!empty($content)){
-            $this->content = $content;
+        if($content === null){
+            $this->string = $content;
         }
         $ret = fwrite($this->handle, $this->content);
         if($ret === false)
-            return false;
+            return $this;
         $this->functionName = __FUNCTION__;
         return $this;
     }
 
-    /*
-     * duplicate takes a file and duplicates it and appends a number to it.
-     * for example apple.txt will be duplicated as apple_1.txt if duplicated again, it will be apple_2.txt and so on
-     * if a filename is provided, the newly duplicated file will become the new working file
+    /**
+     *
+     * @param string $filename
+     * @return \phpLive
+     *
+     * Duplicates a file on the server example: file.php -> file_1.php -> file_2.php
      */
-
     public function duplicate($filename = null){
         if(is_string($filename)){
             $this->filename = $filename;
         }
         $this->read($this->filename);
-        $ret = $this->save($this->filename, $this->content, false);
+        $this->save($this->filename, $this->content, false);
         $this->functionName = __FUNCTION__;
-        return $ret;
+        return $this;
     }
 
-    /*
-     * This takes a file and sets it to an empty file, removing all content from the file.
-     * by default it works with the current file opend ($this->open(), $this->save(), etc.)
-     * if a filename is provide, it will truncate that file and this will become the new working file
+    /**
+     *
+     * @param string $filename
+     * @return \phpLive
+     *
+     * removes all the content from a file
      */
-
     public function truncate($filename = null){
         if(is_string($filename)){
             $this->filename = $filename;
         }
-        $ret = $this->save($this->filename, "");
+        $this->save($this->filename, "");
         $this->functionName = __FUNCTION__;
-        return $ret;
+        return $this;
     }
 
-    /*
-     * delete deletes a file from the file system
-     * by default, it will delete the file specified by the file methods ($this->open(), $this->save(), etc.)
-     * if a filename string is provided, it will delete that file
+    /**
+     *
+     * @param type $filename
+     * @return \phpLive
+     *
+     * Deletes a file on the server
      */
-
     public function delete($filename = null){
         if(is_string($filename)){
             $this->filename = $filename;
@@ -959,7 +1225,7 @@ class phpLive{
             $this->functionName = __FUNCTION__;
             return $this;
         }
-        return false;
+        return $this;
     }
 
     /*
@@ -1063,7 +1329,7 @@ class phpLive{
 
     public function imageResize($save_name, $filename = null, $thumbWidth = 200, $quality = 100){
         if($filename === null){
-            $image  = imagecreatefromstring($this->quickString);
+            $image  = imagecreatefromstring($this->string);
             $width  = imagesx($image);
             $height = imagesy($image);
             $mime   = "png";
@@ -1256,9 +1522,9 @@ class phpLive{
             return $this;
         $this->functionName = __FUNCTION__;
         if(function_exists("mysqli_insert_id"))
-            $this->quickString = mysqli_insert_id($connection);
+            $this->string = mysqli_insert_id($connection);
         else
-            $this->quickString = mysql_insert_id($connection);
+            $this->string = mysql_insert_id($connection);
         return $this;
     }
 
@@ -1266,12 +1532,12 @@ class phpLive{
         if(is_string($query)){
             $connection_id = (int)$connection_id;
             if(!$this->dbQuery($query, $connection_id)){
-                $this->quickString = $default;
+                $this->string = $default;
                 return $this;
             }
             if($this->dbNumRows($this->dbResult[$connection_id])->toInt() == 0){
                 $this->functionName = __FUNCTION__;
-                $this->quickString = $default;
+                $this->string = $default;
                 return $this;
             }
             if(function_exists("mysqli_fetch_array")){
@@ -1280,7 +1546,7 @@ class phpLive{
                 $arr = mysql_fetch_array($this->dbResult[$connection_id]);
             }
             $this->functionName = __FUNCTION__;
-            $this->quickString = $arr[0];
+            $this->string = $arr[0];
         }
         return $this;
     }
@@ -1292,26 +1558,26 @@ class phpLive{
             if(function_exists("mysqli_query")){
                 if(!$sql = mysqli_query($this->db[$connection_id], $query)){
                     $this->functionName = __FUNCTION__;
-                    $this->quickString = $default;
+                    $this->string = $default;
                     return $this;
                 }
             }else{
                 if(!$sql = mysql_query($query, $this->db[$connection_id])){
                     $this->functionName = __FUNCTION__;
-                    $this->quickString = $default;
+                    $this->string = $default;
                     return $this;
                 }
             }
             if(function_exists("mysqli_num_rows")){
                 if(mysqli_num_rows($sql) == 0){
                     $this->functionName = __FUNCTION__;
-                    $this->quickString = $default;
+                    $this->string = $default;
                     return $this;
                 }
             }else{
                 if(mysql_num_rows($sql) == 0){
                     $this->functionName = __FUNCTION__;
-                    $this->quickString = $default;
+                    $this->string = $default;
                     return $this;
                 }
             }
@@ -1319,7 +1585,7 @@ class phpLive{
                 $arr = mysqli_fetch_array($sql);
             else
                 $arr = mysql_fetch_array($sql);
-            $this->quickString = $arr[0];
+            $this->string = $arr[0];
             return $this;
         }
         return $this;
@@ -1327,7 +1593,7 @@ class phpLive{
 
     public function dbNumQueries(){
         $this->functionName = __FUNCTION__;
-        $this->quickString = $this->dbQueries;
+        $this->string = $this->dbQueries;
         return $this;
     }
 
@@ -1339,7 +1605,7 @@ class phpLive{
             else
                 $this->dbRow = mysql_fetch_assoc($this->dbResult[$connection_id]);
             $this->functionName = __FUNCTION__;
-            $this->quickString = $this->dbRow;
+            $this->string = $this->dbRow;
         }elseif($query == null){
             if(is_int($connection_id)){
                 if(function_exists("mysqli_fetch_assoc"))
@@ -1359,10 +1625,10 @@ class phpLive{
     public function dbField($name, $default = ''){
         $this->functionName = __FUNCTION__;
         if(isset($this->dbRow[$name])){
-            $this->quickString = $this->dbRow[$name];
+            $this->string = $this->dbRow[$name];
             return $this;
         }
-        $this->quickString = $default;
+        $this->string = $default;
         return $this;
     }
 
@@ -1371,9 +1637,9 @@ class phpLive{
             $result = $this->dbResult[$connection_id];
         $this->functionName = __FUNCTION__;
         if(function_exists("mysqli_num_rows")){
-            $this->quickString = mysqli_num_rows($result);
+            $this->string = mysqli_num_rows($result);
         }else{
-            $this->quickString = mysql_num_rows($result);
+            $this->string = mysql_num_rows($result);
         }
         return $this;
     }
@@ -1392,14 +1658,14 @@ class phpLive{
             return $this;
         if($string == null){
             if(function_exists("mysqli_real_escape_string"))
-                $this->quickString = mysqli_real_escape_string($connection, $this->quickString);
+                $this->string = mysqli_real_escape_string($connection, $this->string);
             else
-                $this->quickString = mysql_real_escape_string($this->quickString, $connection);
+                $this->string = mysql_real_escape_string($this->string, $connection);
         }else{
             if(function_exists("mysqli_real_escape_string"))
-                $this->quickString = mysqli_real_escape_string($connection, $string);
+                $this->string = mysqli_real_escape_string($connection, $string);
             else
-                $this->quickString = mysql_real_escape_string($string, $connection);
+                $this->string = mysql_real_escape_string($string, $connection);
         }
         $this->functionName = __FUNCTION__;
         return $this;
@@ -1542,7 +1808,7 @@ class phpLive{
         $fp = fsockopen($host, $port);
         fwrite($fp, $buffer);
         fclose($fp);
-        $this->quickString = $buffer;
+        $this->string = $buffer;
         $this->functionName = __FUNCTION__;
         return $this;
     }
@@ -1562,7 +1828,7 @@ class phpLive{
             $read   = socket_read($client, $length);
             if(is_string($read)){
                 if(strlen($read) > 0){
-                    $this->quickString = $read;
+                    $this->string = $read;
                     $this->functionName = __FUNCTION__;
                     return $this;
                 }
@@ -1615,7 +1881,7 @@ class phpLive{
 
     public function strIn(){
         $input = fgets(STDIN);
-        $this->quickString = preg_replace("/\r|\n/", "", $input);
+        $this->string = preg_replace("/\r|\n/", "", $input);
         $this->functionName = __FUNCTION__;
         return $this;
     }
@@ -1632,7 +1898,7 @@ class phpLive{
         if($live_feedback)
             $this->command("ping $host $param $count", true);
         else{
-            $this->quickString = $this->command("ping $host $param $count", false);
+            $this->string = $this->command("ping $host $param $count", false);
             $this->functionName = __FUNCTION__;
             return $this;
         }
@@ -1642,7 +1908,7 @@ class phpLive{
         if((bool)$live_feedback){
             passthru($cmd);
         }else{
-            $this->quickString = shell_exec($cmd);
+            $this->string = shell_exec($cmd);
             $this->functionName = __FUNCTION__;
             return $this;
         }
@@ -1692,10 +1958,10 @@ class phpLive{
         $nargs = count($args);
         for($i     = 0; $i < $nargs; $i+=2){
             if($i == $nargs - 1 && is_callable($args[$i])){
-                $this->quickString = call_user_func($args[$i]);
+                $this->string = call_user_func($args[$i]);
             }elseif($args[$i]){
                 if(is_callable($args[$i + 1])){
-                    $this->quickString = call_user_func($args[$i + 1]);
+                    $this->string = call_user_func($args[$i + 1]);
                     break;
                 }
             }
@@ -1714,7 +1980,7 @@ class phpLive{
             $vals[] = $arg;
         }
         $num    = mt_rand(0, count($vals) - 1);
-        $this->quickString = $vals[$num];
+        $this->string = $vals[$num];
         return $this;
     }
 
@@ -1755,7 +2021,7 @@ class phpLive{
             if(isset($section['className'])){
                 if($section['className'] == $this->getCalledClass()){
                     if($sessionValue == null)
-                        $sessionValue                                             = $this->quickString;
+                        $sessionValue                                             = $this->string;
                     $_SESSION['phpLive'][$section['sessionRef']][$sessionKey] = $sessionValue;
                     $this->functionName = __FUNCTION__;
                     return $this;
@@ -1783,7 +2049,7 @@ class phpLive{
                 if($section['className'] == $this->getCalledClass()){
                     if(isset($_SESSION['phpLive'][$section['sessionRef']][$sessionKey])){
                         $this->functionName = __FUNCTION__;
-                        $this->quickString = $_SESSION['phpLive'][$section['sessionRef']][$sessionKey];
+                        $this->string = $_SESSION['phpLive'][$section['sessionRef']][$sessionKey];
                         return $this;
                     }
                 }
@@ -1791,9 +2057,9 @@ class phpLive{
         }
         $this->functionName = __FUNCTION__;
         if(isset($_SESSION['phpLive'][$sessionKey])){
-            $this->quickString = $_SESSION['phpLive'][$sessionKey];
+            $this->string = $_SESSION['phpLive'][$sessionKey];
         }else{
-            $this->quickString = $default;
+            $this->string = $default;
         }
         return $this;
     }
@@ -1885,10 +2151,10 @@ class phpLive{
 
     public function convertSmart($string = null){
         if($string == null)
-            $string = $this->quickString;
+            $string = $this->string;
         $search = array(chr(145), "‘", chr(146), "’", chr(147), "“", chr(148), "�?", chr(151), "—", chr(150), "–", chr(133), "…", chr(149), "•");
         $replace = array("'", "'", "'", "'", '"', '"', '"', '"', '--', '--', '-', '-', '...', '...', "&bull;", "&bull;");
-        $this->quickString = str_replace($search, $replace, $string);
+        $this->string = str_replace($search, $replace, $string);
         $this->functionName = __FUNCTION__;
         return $this;
     }
@@ -2046,9 +2312,9 @@ class phpLive{
             return false;
         }
         if(isset($_GET[$key])){
-            $this->quickString = $_GET[$key];
+            $this->string = $_GET[$key];
         }else{
-            $this->quickString = $default;
+            $this->string = $default;
         }
         $this->functionName = __FUNCTION__;
         return $this;
@@ -2075,10 +2341,10 @@ class phpLive{
             return false;
         }
         if(isset($_POST[$key])){
-            $this->quickString = $_POST[$key];
+            $this->string = $_POST[$key];
             //return $_POST[$key];
         }else{
-            $this->quickString = $default;
+            $this->string = $default;
         }
         $this->functionName = __FUNCTION__;
         return $this;
@@ -2092,11 +2358,11 @@ class phpLive{
 
     public function gp($key, $default = ""){
         if(isset($_GET[$key]))
-            $this->quickString = $_GET[$key];
+            $this->string = $_GET[$key];
         elseif(isset($_POST[$key]))
-            $this->quickString = $_POST[$key];
+            $this->string = $_POST[$key];
         else
-            $this->quickString = $default;
+            $this->string = $default;
         $this->functionName = __FUNCTION__;
         return $this;
     }
@@ -2113,17 +2379,17 @@ class phpLive{
             $this->list = $_FILES[$key];
             return $this;
         }
-        $this->quickString = $default;
+        $this->string = $default;
         return $this;
     }
 
     public function fromList($key, $default = ""){
         $this->functionName = __FUNCTION__;
         if(isset($this->list[$key])){
-            $this->quickString = $this->list[$key];
+            $this->string = $this->list[$key];
             return $this;
         }
-        $this->quickString = $default;
+        $this->string = $default;
         return $this;
     }
 
@@ -2173,22 +2439,22 @@ class phpLive{
     public function extract($value, $type = EXTRACT_NUMBER){
         switch($type){
             case EXTRACT_NUMBER:
-                $this->quickString = preg_replace("/[^0-9]/", "", $value);
+                $this->string = preg_replace("/[^0-9]/", "", $value);
                 break;
             case EXTRACT_LETTER:
-                $this->quickString = preg_replace("/[^a-zA-Z]/", "", $value);
+                $this->string = preg_replace("/[^a-zA-Z]/", "", $value);
                 break;
             case EXTRACT_NUMBER_LETTER:
-                $this->quickString = preg_replace("/[^a-zA-Z0-9]/", "", $value);
+                $this->string = preg_replace("/[^a-zA-Z0-9]/", "", $value);
                 break;
             case EXTRACT_UPPER:
-                $this->quickString = preg_replace("/[^A-Z]/", "", $value);
+                $this->string = preg_replace("/[^A-Z]/", "", $value);
                 break;
             case EXTRACT_LOWER:
-                $this->quickString = preg_replace("/[^a-z]/", "", $value);
+                $this->string = preg_replace("/[^a-z]/", "", $value);
                 break;
             case EXTRACT_SYMBOL:
-                $this->quickString = preg_replace("/[a-zA-Z0-9 ]/", "", $value);
+                $this->string = preg_replace("/[a-zA-Z0-9 ]/", "", $value);
                 break;
             case EXTRACT_PHONE:
                 $value = $this->remove($value, REMOVE_SYMBOL);
@@ -2209,25 +2475,25 @@ class phpLive{
 
     public function remove($value = null, $type = REMOVE_WHITE_SPACE){
         if($value == null)
-            $value = $this->quickString;
+            $value = $this->string;
         switch($type){
             case REMOVE_SYMBOL:
-                $this->quickString = preg_replace("/[^a-zA-Z0-9 ]/", "", $value);
+                $this->string = preg_replace("/[^a-zA-Z0-9 ]/", "", $value);
                 break;
             case REMOVE_WHITE_SPACE:
-                $this->quickString = preg_replace("/ /", "", $value);
+                $this->string = preg_replace("/ /", "", $value);
                 break;
             case REMOVE_LETTER:
-                $this->quickString = preg_replace("/[a-zA-Z]/", "", $value);
+                $this->string = preg_replace("/[a-zA-Z]/", "", $value);
                 break;
             case REMOVE_NUMBER:
-                $this->quickString = preg_replace("/[0-9]/", "", $value);
+                $this->string = preg_replace("/[0-9]/", "", $value);
                 break;
             case REMOVE_LOWER:
-                $this->quickString = preg_replace("/[a-z]/", "", $value);
+                $this->string = preg_replace("/[a-z]/", "", $value);
                 break;
             case REMOVE_UPPER:
-                $this->quickString = preg_replace("/[A-Z]/", "", $value);
+                $this->string = preg_replace("/[A-Z]/", "", $value);
                 break;
         }
         $this->functionName = __FUNCTION__;
@@ -2307,7 +2573,7 @@ class phpLive{
 
     public function blank($string = null){
         if($string == null)
-            $string = $this->quickString;
+            $string = $this->string;
         $string = str_replace(array(" ", "\t", "\n", "\r"), "", $string);
         $this->functionName = __FUNCTION__;
         return (bool)empty($string);
@@ -2323,7 +2589,7 @@ class phpLive{
         if(is_null($date))
             $date = $this->now();
         $this->functionName = __FUNCTION__;
-        $this->quickString = date("Y-m-d H:i:s", strtotime($date));
+        $this->string = date("Y-m-d H:i:s", strtotime($date));
         return $this;
     }
 
@@ -2552,7 +2818,7 @@ class phpLive{
             $date = strtotime($date);
         }
         $this->functionName = __FUNCTION__;
-        $this->quickString = date($format, $date);
+        $this->string = date($format, $date);
         return $this;
     }
 
@@ -2667,7 +2933,7 @@ class phpLive{
      */
 
     public function inetAton($ip_address){
-        $this->quickString = (int)sprintf("%u\n", ip2long($ip_address));
+        $this->string = (int)sprintf("%u\n", ip2long($ip_address));
         $this->functionName = __FUNCTION__;
         return $this;
     }
@@ -2678,7 +2944,7 @@ class phpLive{
      */
 
     public function inetNtoa($number){
-        $this->quickString = long2ip((int)$number);
+        $this->string = long2ip((int)$number);
         $this->functionName = __FUNCTION__;
         return $this;
     }
@@ -2736,7 +3002,7 @@ class phpLive{
             while($this->dbRow()){
                 $tempArr[] = call_user_func($callback, $this->dbRow);
             }
-            $this->quickString = implode("", $tempArr);
+            $this->string = implode("", $tempArr);
             $this->functionName = __FUNCTION__;
             return $this;
         }
@@ -2777,23 +3043,23 @@ class phpLive{
         $this->functionName = __FUNCTION__;
         $os = php_uname('s');
         if(preg_match("/windows/i", $os))
-            $this->quickString = 'windows';
+            $this->string = 'windows';
         if(preg_match("/linux/i", $os))
-            $this->quickString = 'linux';
+            $this->string = 'linux';
         if(preg_match("/unix/i", $os))
-            $this->quickString = 'unix';
+            $this->string = 'unix';
         return $this;
     }
 
     public function format($string = null, $places = 0){
         if($string == null)
-            $string = $this->quickString;
-        $this->quickString = number_format($string, $places);
+            $string = $this->string;
+        $this->string = number_format($string, $places);
         return $this;
     }
 
     public function versionComp($version1, $version2){
-        $this->quickString = version_compare($version1, $version2);
+        $this->string = version_compare($version1, $version2);
         $this->functionName = __FUNCTION__;
         return $this;
     }
@@ -2807,9 +3073,9 @@ class phpLive{
 
     public function regCount($string, $subject = null, $delim = "/"){
         if($subject == null)
-            $subject = $this->quickString;
+            $subject = $this->string;
         preg_match_all($delim.$string.$delim, $subject, $matches);
-        $this->quickString = count($matches[0]);
+        $this->string = count($matches[0]);
         return $this;
     }
 
