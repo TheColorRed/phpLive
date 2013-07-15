@@ -1,4 +1,5 @@
 <?php
+
 /*
  * phpLive PHP Library v1.0.0-alpha
  * http://phplive.org/
@@ -78,8 +79,10 @@ define("HIGHLIGHT_CSS", 3);
 define("IMAGE_JPG", 1);
 define("IMAGE_PNG", 2);
 define("IMAGE_GIF", 3);
+
 // Begin phpLive Class
 class phpLive{
+
     // Protected Properties
     protected $phpLiveDomain = 'http://www.phplive.org';
     protected $version       = "1.0.0-alpha";
@@ -101,25 +104,23 @@ class phpLive{
     protected $zipId         = 0;
     protected $memorySize    = 2;
     protected $tmpFile       = "";
-
     // Private Read-Only Properties
     private $url, $ch, $links, $cleanData, $info, $title, $endingUrl, $httpCode, $loadTime;
-    private $processing      = false, $urlQuery;
-    private $extension       = array();
-
+    private $processing = false, $urlQuery;
+    private $extension  = array();
     // Public Properties
-    public $colors           = array("#ffffff", "#eeeeee");
-    public $coreLoaded       = false;
+    public $colors       = array("#ffffff", "#eeeeee");
+    public $coreLoaded   = false;
     public $thumbDir;
     public $content;
-    public $db               = array();
-    public $dbHostname, $dbUsername, $dbPassword, $dbDatabase, $dbPort, $dbResult, $dbRow, $dbQueries = 0;
-    public $port             = 80;
-    public $host             = 'localhost';
-    public $list             = array();
-    public $post             = array();
-    public $functionName     = null;
-    public $string      = "";
+    public $db           = array();
+    public $dbHostname, $dbUsername, $dbPassword, $dbDatabase, $dbPort, $dbResult, $dbRow, $dbQueries    = 0;
+    public $port         = 80;
+    public $host         = 'localhost';
+    public $list         = array();
+    public $post         = array();
+    public $functionName = null;
+    public $string       = "";
 
     public function __construct(){
         $this->location = dirname(__FILE__);
@@ -128,37 +129,37 @@ class phpLive{
 
     public function __get($name){
         switch($name){
-            case 'links': $ret = $this->links;
+            case 'links': $ret            = $this->links;
                 break;
             case 'location':
                 if(empty($this->location))
                     $this->location = dirname(__FILE__);
-                $ret = $this->location;
+                $ret            = $this->location;
                 break;
-            case 'data': $ret = $this->content;
+            case 'data': $ret            = $this->content;
                 break;
-            case 'url': $ret = $this->url;
+            case 'url': $ret            = $this->url;
                 break;
-            case 'info': $ret = $this->info;
+            case 'info': $ret            = $this->info;
                 break;
-            case 'endingUrl': $ret = $this->endingUrl;
+            case 'endingUrl': $ret            = $this->endingUrl;
                 break;
-            case 'httpCode': $ret = $this->httpCode;
+            case 'httpCode': $ret            = $this->httpCode;
                 break;
-            case 'loadTime': $ret = $this->loadTime;
+            case 'loadTime': $ret            = $this->loadTime;
                 break;
-            case 'cleanData': $ret = $this->cleanData;
+            case 'cleanData': $ret            = $this->cleanData;
                 break;
-            case 'title': $ret = $this->title;
+            case 'title': $ret            = $this->title;
                 break;
-            case 'exit': $ret = $this->exit;
+            case 'exit': $ret            = $this->exit;
                 break;
             case 'processing': $this->poll();
-                $ret = $this->processing;
+                $ret            = $this->processing;
                 break;
-            case 'errors': $ret = $this->errors;
+            case 'errors': $ret            = $this->errors;
                 break;
-            case 'urlQuery': $ret = $this->urlQuery;
+            case 'urlQuery': $ret            = $this->urlQuery;
                 break;
             default:
                 if(array_key_exists($name, $this->extension)){
@@ -220,8 +221,8 @@ class phpLive{
      */
     public function toLower($string = null){
         if(is_string($string))
-            $this->string = $string;
-        $this->string = strtolower($this->string);
+            $this->string       = $string;
+        $this->string       = strtolower($this->string);
         $this->functionName = __FUNCTION__;
         return $this;
     }
@@ -236,8 +237,8 @@ class phpLive{
      */
     public function toUpper($string = null){
         if(is_string($string))
-            $this->string = $string;
-        $this->string = strtoupper($this->string);
+            $this->string       = $string;
+        $this->string       = strtoupper($this->string);
         $this->functionName = __FUNCTION__;
         return $this;
     }
@@ -295,8 +296,8 @@ class phpLive{
         if(function_exists('get_called_class')){
             return get_called_class();
         }
-        $t = debug_backtrace();
-        $t = $t[0];
+        $t                  = debug_backtrace();
+        $t                  = $t[0];
         $this->functionName = __FUNCTION__;
         if(isset($t['object']) && $t['object'] instanceof $t['class'])
             return get_class($t['object']);
@@ -324,7 +325,7 @@ class phpLive{
      */
     public function numMethods($class){
         $this->functionName = __FUNCTION__;
-        $this->string = count(get_class_methods($class));
+        $this->string       = count(get_class_methods($class));
         return $this;
     }
 
@@ -341,12 +342,12 @@ class phpLive{
      */
     public function loadPlugin($class, $info){
         $info = (object)$info;
-        $file = $this->location."/plugins/".$info->root."/".$info->fileName;
+        $file = $this->location . "/plugins/" . $info->root . "/" . $info->fileName;
         if(is_file($file)){
             require_once $file;
-            $instance = (string)$info->instanceName;
-            $this->$instance = new $class();
-            $this->functionName = __FUNCTION__;
+            $instance                   = (string)$info->instanceName;
+            $this->$instance            = new $class();
+            $this->functionName         = __FUNCTION__;
             $this->extension[$instance] = $this->$instance;
             return $this->$instance;
         }
@@ -399,8 +400,8 @@ class phpLive{
     public function allPluginSettings(){
         $this->functionName = __FUNCTION__;
         if(empty($this->location))
-            $this->location = dirname(__FILE__);
-        $file = $this->location."/plugins/plugins.ini";
+            $this->location     = dirname(__FILE__);
+        $file               = $this->location . "/plugins/plugins.ini";
         if(is_file($file))
             return parse_ini_file($file, true);
         else
@@ -414,9 +415,9 @@ class phpLive{
      * @return object|array
      */
     public function pluginSettings($class = null, $return_object = true){
-        $ini   = $this->allPluginSettings();
+        $ini                = $this->allPluginSettings();
         if($class == null)
-            $class = $this->getCalledClass();
+            $class              = $this->getCalledClass();
         $this->functionName = __FUNCTION__;
         if($return_object)
             return (object)$ini[$class];
@@ -424,11 +425,11 @@ class phpLive{
             return $ini[$class];
     }
 
-    /*public function extend($callback){
-        $object = (object)$callback;
+    /* public function extend($callback){
+      $object = (object)$callback;
 
-        var_dump(get_class_vars($object));
-    }*/
+      var_dump(get_class_vars($object));
+      } */
 
     /**
      *
@@ -454,9 +455,9 @@ class phpLive{
         }else{
             $this->url = $url;
         }
-        $url = $this->url;
+        $url                = $this->url;
         $this->filebasename = basename($url);
-        $this->ch = curl_init();
+        $this->ch           = curl_init();
         curl_setopt($this->ch, CURLOPT_URL, $url);
         curl_setopt($this->ch, CURLOPT_FOLLOWLOCATION, true);
         curl_setopt($this->ch, CURLOPT_RETURNTRANSFER, true);
@@ -473,13 +474,13 @@ class phpLive{
                 curl_setopt($this->ch, $key, $val);
             }
         }
-        $this->content = curl_exec($this->ch);
-        $this->info = (object)curl_getinfo($this->ch);
-        $this->endingUrl = $this->info->url;
-        $this->httpCode = $this->info->http_code;
-        $this->loadTime = $this->info->total_time;
+        $this->content      = curl_exec($this->ch);
+        $this->info         = (object)curl_getinfo($this->ch);
+        $this->endingUrl    = $this->info->url;
+        $this->httpCode     = $this->info->http_code;
+        $this->loadTime     = $this->info->total_time;
         curl_close($this->ch);
-        $this->string = $this->content;
+        $this->string       = $this->content;
         $this->functionName = __FUNCTION__;
         return $this;
     }
@@ -494,19 +495,19 @@ class phpLive{
      */
     public function getCleanData($data = null){
         if($data == null){
-            $data  = $this->string;
+            $data = $this->string;
         }
-        $clean = preg_replace("/\<(script|style).*\>.*\<\/(script|style)\>/isU", " ", $data);
-        $clean = preg_replace("/\<title.*\>.*\<\/title\>/isU", " ", $clean);
-        $clean = preg_replace("/\<\!--.*\--\>/isU", " ", $clean);
-        $clean = preg_replace("/\</isU", " <", $clean);
-        $clean = strip_tags($clean);
-        $clean = preg_replace("/(\r|\n|\t)/", " ", $clean);
-        $clean = preg_replace("/\s\s+/", " ", $clean);
-        $clean = $this->convertSmart($clean);
-        $clean = trim($clean);
-        $this->cleanData = $clean;
-        $this->string = $clean;
+        $clean              = preg_replace("/\<(script|style).*\>.*\<\/(script|style)\>/isU", " ", $data);
+        $clean              = preg_replace("/\<title.*\>.*\<\/title\>/isU", " ", $clean);
+        $clean              = preg_replace("/\<\!--.*\--\>/isU", " ", $clean);
+        $clean              = preg_replace("/\</isU", " <", $clean);
+        $clean              = strip_tags($clean);
+        $clean              = preg_replace("/(\r|\n|\t)/", " ", $clean);
+        $clean              = preg_replace("/\s\s+/", " ", $clean);
+        $clean              = $this->convertSmart($clean);
+        $clean              = trim($clean);
+        $this->cleanData    = $clean;
+        $this->string       = $clean;
         $this->functionName = __FUNCTION__;
         return $this;
     }
@@ -525,11 +526,11 @@ class phpLive{
         }
         preg_match("/\<title.*\>(.*)\<\/title\>/isU", $data, $matches);
         if(isset($matches[1]))
-            $this->title = $matches[1];
+            $this->title        = $matches[1];
         else
             return false;
-        $this->list = $this->title;
-        $this->string = $this->title;
+        $this->list         = $this->title;
+        $this->string       = $this->title;
         $this->functionName = __FUNCTION__;
         return $this;
     }
@@ -552,8 +553,8 @@ class phpLive{
             $data = $this->string;
         }
         preg_match_all("/\<a.+?href=(\"|')(?!javascript:|#)(.+?)(\"|')/i", $data, $matches);
-        $this->links = $matches[2];
-        $this->list = $this->links;
+        $this->links        = $matches[2];
+        $this->list         = $this->links;
         $this->functionName = __FUNCTION__;
         return $this;
     }
@@ -577,7 +578,7 @@ class phpLive{
             $str     = "";
             $letters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890";
             for($i = 0; $i < $total; $i++){
-                $pos  = mt_rand(0, strlen($letters));
+                $pos = mt_rand(0, strlen($letters));
                 $str .= $letters[$pos];
             }
             $name = preg_replace("/rand\(([0-9]+)\)/", $str, $name);
@@ -585,10 +586,10 @@ class phpLive{
         if(preg_match("/\/(.+)$/", $name, $matches)){
             $type = $matches[1];
             if(in_array($type, hash_algos())){
-                eval('$name = hash("'.$type.'", $name);');
+                eval('$name = hash("' . $type . '", $name);');
             }
         }
-        $this->string = $name;
+        $this->string       = $name;
         $this->functionName = __FUNCTION__;
         return $this;
     }
@@ -604,7 +605,7 @@ class phpLive{
     public function hash($content = null, $type = 'md5'){
         $this->functionName = __FUNCTION__;
         if($content == null)
-            $content = $this->string;
+            $content            = $this->string;
         if(in_array($type, hash_algos())){
             $this->string = hash($type, $content);
         }
@@ -625,13 +626,13 @@ class phpLive{
      */
     public function getBetween($start, $end, $data = null, $dataType = DATA_HTML, $include_start_end = false, $htmlFormat = false){
         $this->functionName = __FUNCTION__;
-        $start = preg_quote($start, "/");
-        $end   = preg_quote($end, "/");
+        $start              = preg_quote($start, "/");
+        $end                = preg_quote($end, "/");
         if($data == null){
             if($dataType == DATA_CLEAN)
-                $data   = $this->cleanData;
+                $data = $this->cleanData;
             elseif($dataType == DATA_HTML)
-                $data   = $this->content;
+                $data = $this->content;
             else
                 return $this;
         }
@@ -676,10 +677,10 @@ class phpLive{
      */
     public function implode($glue = " ", $array = null){
         if($array == null)
-            $array = $this->list;
+            $array              = $this->list;
         if(!is_array($array))
             return $this;
-        $this->string = implode($glue, $array);
+        $this->string       = implode($glue, $array);
         $this->functionName = __FUNCTION__;
         return $this;
     }
@@ -729,8 +730,8 @@ class phpLive{
      */
     public function spToTab($spaces = 4, $string = null){
         if($string == null)
-            $string = $this->string;
-        $this->string = preg_replace("/(&nbsp;){".$spaces."}| {".$spaces."}/", "\t", $string);
+            $string             = $this->string;
+        $this->string       = preg_replace("/(&nbsp;){" . $spaces . "}| {" . $spaces . "}/", "\t", $string);
         $this->functionName = __FUNCTION__;
         return $this;
     }
@@ -745,8 +746,8 @@ class phpLive{
      */
     public function tabToSp($spaces = 4, $string = null){
         if($string == null)
-            $string = $this->string;
-        $this->string = preg_replace("/\t/", str_repeat("&nbsp;", $spaces), $string);
+            $string             = $this->string;
+        $this->string       = preg_replace("/\t/", str_repeat("&nbsp;", $spaces), $string);
         $this->functionName = __FUNCTION__;
         return $this;
     }
@@ -767,8 +768,8 @@ class phpLive{
                 $string = $this->string;
         }
         if($input == INPUT_FILE)
-            $string = file_get_contents($string);
-        $this->string = count(explode("\n", $string));
+            $string             = file_get_contents($string);
+        $this->string       = count(explode("\n", $string));
         $this->functionName = __FUNCTION__;
         return $this;
     }
@@ -815,7 +816,7 @@ class phpLive{
      */
     public function highlight($content = null, $highlight = HIGHLIGHT_PHP, $input = INPUT_STRING){
         if($content == null)
-            $content = $this->string;
+            $content      = $this->string;
         $this->string = "";
         switch($highlight){
             case HIGHLIGHT_PHP:
@@ -830,7 +831,7 @@ class phpLive{
                 break;
             case HIGHLIGHT_HTML:
                 if($input == INPUT_FILE){
-                    $content   = file_get_contents($content);
+                    $content = file_get_contents($content);
                 }
                 $iscomment = false;
                 $tag       = "#0000ff";
@@ -843,7 +844,7 @@ class phpLive{
                 foreach($sp as $split){
                     $split = htmlentities($split, ENT_QUOTES, "UTF-8", false);
                     if(preg_match("/&lt;!--/i", $split)){
-                        $tmpStr .= '<span style="color:'.$com.';font-style:italic;">'.$split.'</span>';
+                        $tmpStr .= '<span style="color:' . $com . ';font-style:italic;">' . $split . '</span>';
                     }elseif(preg_match("/&lt;style/i", $split)){
                         //print_r($split);exit;
                         $spl = preg_split("/(&lt;style.*?&gt;|&lt;\/style&gt;)/i", $split, -1, PREG_SPLIT_DELIM_CAPTURE);
@@ -852,13 +853,13 @@ class phpLive{
                             '~(\s[a-z].*?=)~',
                             '~(&lt;([a-z?]|!DOCTYPE).*?&gt;)~'
                                 ), array(
-                            '<span style="color:'.$att.';">$1</span>',
-                            '<span style="color:'.$tag.';">$1</span>'
+                            '<span style="color:' . $att . ';">$1</span>',
+                            '<span style="color:' . $tag . ';">$1</span>'
                                 ), $spl[1]);
                         $tmpStr .= $this->highlight($spl[2], HIGHLIGHT_CSS);
-                        $tmpStr .= preg_replace("~(&lt;/[a-zA-Z].*?&gt;)~", '<span style="color:'.$tag.';">$1</span>', $spl[3]);
+                        $tmpStr .= preg_replace("~(&lt;/[a-zA-Z].*?&gt;)~", '<span style="color:' . $tag . ';">$1</span>', $spl[3]);
                     }else{
-                        $find = array(
+                        $find    = array(
                             '~(\s[a-z].*?=)~', // Highlight the attributes
                             '~(&quot;[a-zA-Z0-9\/].*?&quot;)~', // Highlight the values
                             '~(&lt;([a-z?]|!DOCTYPE).*?&gt;)~', // Highlight the beginning of the opening tag
@@ -867,12 +868,12 @@ class phpLive{
                             '~(&lt;!DOCTYPE.*?&gt;)~', // DOCTYPE
                         );
                         $replace = array(
-                            '<span style="color:'.$att.';">$1</span>',
-                            '<span style="color:'.$val.';">$1</span>',
-                            '<span style="color:'.$tag.';">$1</span>',
-                            '<span style="color:'.$tag.';">$1</span>',
+                            '<span style="color:' . $att . ';">$1</span>',
+                            '<span style="color:' . $val . ';">$1</span>',
+                            '<span style="color:' . $tag . ';">$1</span>',
+                            '<span style="color:' . $tag . ';">$1</span>',
                             '<span style="font-style:italic;">$1</span>',
-                            '<span style="color:'.$doc.';">$1</span>',
+                            '<span style="color:' . $doc . ';">$1</span>',
                         );
                         $tmpStr .= preg_replace($find, $replace, $split);
                     }
@@ -902,24 +903,24 @@ class phpLive{
      */
     public function highlightCSS($css = null, $pre = false){
         if($css == null)
-            $css    = $this->string;
+            $css                = $this->string;
         $this->functionName = __FUNCTION__;
-        $tokens = array();
-        $len        = strlen($css);
-        $i          = 0;
-        $state      = 'selector';
-        $prevState  = "";
-        $tokenValue = '';
-        $commenting = false;
-        $isvalue    = false;
-        $isstring   = false;
-        $openStr    = "";
+        $tokens             = array();
+        $len                = strlen($css);
+        $i                  = 0;
+        $state              = 'selector';
+        $prevState          = "";
+        $tokenValue         = '';
+        $commenting         = false;
+        $isvalue            = false;
+        $isstring           = false;
+        $openStr            = "";
         while($i < $len){
             switch($css[$i]){
                 case '{':
                     if(!$commenting){
-                        $tokens[] = array('type'    => $state, 'value'   => $tokenValue);
-                        $tokens[] = array('type'      => 'ruleset-begin', 'value'     => '{');
+                        $tokens[]   = array('type'  => $state, 'value' => $tokenValue);
+                        $tokens[]   = array('type'  => 'ruleset-begin', 'value' => '{');
                         $state      = 'ruleset';
                         $tokenValue = '';
                     }else{
@@ -928,8 +929,8 @@ class phpLive{
                     break;
                 case '}':
                     if(!$commenting){
-                        $tokens[] = array('type'    => $state, 'value'   => $tokenValue);
-                        $tokens[] = array('type'      => 'ruleset-end', 'value'     => '}');
+                        $tokens[]   = array('type'  => $state, 'value' => $tokenValue);
+                        $tokens[]   = array('type'  => 'ruleset-end', 'value' => '}');
                         $state      = 'selector';
                         $tokenValue = '';
                     }else{
@@ -938,50 +939,50 @@ class phpLive{
                     break;
                 default:
                     if($css[$i] == ":" && !$commenting && $state == "ruleset"){
-                        $isvalue   = true;
-                        $prevState = $state;
+                        $isvalue    = true;
+                        $prevState  = $state;
                         $tokenValue .= $css[$i];
-                        $tokens[]  = array('type'      => "ruleset", 'value'     => $tokenValue);
+                        $tokens[]   = array('type'  => "ruleset", 'value' => $tokenValue);
                         $state      = "value";
                         $tokenValue = "";
                         $i++;
                     }
-                    if(isset($css[$i + 1]) && $css[$i].$css[$i + 1] == "/*" && !$commenting){
+                    if(isset($css[$i + 1]) && $css[$i] . $css[$i + 1] == "/*" && !$commenting){
                         $commenting = true;
                         $prevState  = $state;
                         $state      = "comment";
                     }
                     if(($css[$i] == "'" || $css[$i] == '"') && !$commenting){
                         if(!$isstring){
-                            $isstring = true;
-                            $openStr  = $css[$i];
-                            $tokens[] = array('type'      => $state, 'value'     => $tokenValue);
+                            $isstring   = true;
+                            $openStr    = $css[$i];
+                            $tokens[]   = array('type'  => $state, 'value' => $tokenValue);
                             $prevState  = $state;
                             $state      = "string";
                             $tokenValue = "";
                         }else{
                             if($css[$i] == $openStr){
-                                $isstring = false;
-                                $openStr  = "";
+                                $isstring   = false;
+                                $openStr    = "";
                                 $tokenValue .= $css[$i];
-                                $tokens[] = array('type'      => "string", 'value'     => $tokenValue);
+                                $tokens[]   = array('type'  => "string", 'value' => $tokenValue);
                                 $state      = $prevState;
                                 $tokenValue = "";
                                 $i++;
                             }
                         }
                     }
-                    if(isset($css[$i + 1]) && $css[$i].$css[$i + 1] == "*/" && $commenting){
+                    if(isset($css[$i + 1]) && $css[$i] . $css[$i + 1] == "*/" && $commenting){
                         $commenting = false;
-                        $tokens[]   = array('type'      => $state, 'value'     => $tokenValue."*/");
+                        $tokens[]   = array('type'  => $state, 'value' => $tokenValue . "*/");
                         $state      = $prevState;
                         $tokenValue = "";
                         $i++;
                     }else{
                         if($state == "value" && $css[$i] == ";" && $isvalue){
-                            $isvalue  = false;
-                            $tokens[] = array('type'    => $state, 'value'   => $tokenValue);
-                            $tokens[] = array('type'      => "ruleset", 'value'     => ";");
+                            $isvalue    = false;
+                            $tokens[]   = array('type'  => $state, 'value' => $tokenValue);
+                            $tokens[]   = array('type'  => "ruleset", 'value' => ";");
                             $tokenValue = "";
                             $state      = "ruleset";
                         }else{
@@ -995,7 +996,7 @@ class phpLive{
             $tokens[] = array('type'  => $state, 'value' => $tokenValue);
         }
         $this->string = "";
-        $styles = array(
+        $styles       = array(
             'selector'      => 'font-weight: bold;color: #007c00',
             'ruleset'       => 'color: #0000ff;',
             'ruleset-begin' => 'orange',
@@ -1009,7 +1010,7 @@ class phpLive{
         $this->string .= "<span style=\"color: #000000;\">";
         foreach($tokens as $tok){
             $style = $styles[$tok['type']];
-            $this->string .= '<span style="'.$style.'">'.$tok['value'].'</span>';
+            $this->string .= '<span style="' . $style . '">' . $tok['value'] . '</span>';
         }
         $this->string .= "</span>";
         if((bool)$pre)
@@ -1045,8 +1046,8 @@ class phpLive{
         }
         arsort($wordlst);
         if($max > -1)
-            $wordlst = array_slice($wordlst, 0, $max);
-        $this->list = $wordlst;
+            $wordlst            = array_slice($wordlst, 0, $max);
+        $this->list         = $wordlst;
         $this->functionName = __FUNCTION__;
         return $this;
     }
@@ -1060,8 +1061,8 @@ class phpLive{
      */
     public function unixFormat($string = null){
         if($string == null)
-            $string = $this->string;
-        $this->string = preg_replace("/\r\n/", "\n", $string);
+            $string             = $this->string;
+        $this->string       = preg_replace("/\r\n/", "\n", $string);
         $this->functionName = __FUNCTION__;
         return $this;
     }
@@ -1080,8 +1081,8 @@ class phpLive{
      */
     public function open($filename, $mode = 'rb'){
         $this->close();
-        $this->filename = $filename;
-        $this->handle = fopen("$filename", $mode);
+        $this->filename     = $filename;
+        $this->handle       = fopen("$filename", $mode);
         $this->functionName = __FUNCTION__;
         return $this;
     }
@@ -1095,7 +1096,7 @@ class phpLive{
     public function close(){
         if(is_resource($this->handle)){
             fclose($this->handle);
-            $this->handle = null;
+            $this->handle       = null;
             $this->functionName = __FUNCTION__;
             return $this;
         }
@@ -1111,7 +1112,7 @@ class phpLive{
      */
     public function read($filename){
         $this->open($filename);
-        $this->string = fread($this->handle, filesize($filename));
+        $this->string       = fread($this->handle, filesize($filename));
         $this->functionName = __FUNCTION__;
         return $this;
     }
@@ -1135,22 +1136,22 @@ class phpLive{
         }
         if(!$overwrite){
             while(is_file($filename)){
-                $pi       = (object)pathinfo($filename);
-                $file     = $pi->filename;
-                $total    = count(glob($pi->dirname."/".$file."*"));
-                $ext      = $pi->extension;
-                $filename = $pi->dirname."/".$file."_".$total.".".$ext;
+                $pi                = (object)pathinfo($filename);
+                $file              = $pi->filename;
+                $total             = count(glob($pi->dirname . "/" . $file . "*"));
+                $ext               = $pi->extension;
+                $filename          = $pi->dirname . "/" . $file . "_" . $total . "." . $ext;
                 $this->newFilename = $filename;
             }
             $this->open($filename, 'wb');
         }else{
             $this->open($filename, 'wb');
         }
-        $ret = fwrite($this->handle, $this->content);
+        $ret                = fwrite($this->handle, $this->content);
         if($ret === false)
             return $this;
         $this->functionName = __FUNCTION__;
-        $this->string = $this->content;
+        $this->string       = $this->content;
         return $this;
     }
 
@@ -1170,7 +1171,7 @@ class phpLive{
         if($content === null){
             $this->string = $content;
         }
-        $ret = fwrite($this->handle, $this->content);
+        $ret                = fwrite($this->handle, $this->content);
         if($ret === false)
             return $this;
         $this->functionName = __FUNCTION__;
@@ -1221,14 +1222,18 @@ class phpLive{
         if(is_string($filename)){
             $this->filename = $filename;
         }
-        if(unlink($this->location."/".$this->filename)){
+        if(unlink($this->location . "/" . $this->filename)){
             $this->functionName = __FUNCTION__;
             return $this;
         }
         return $this;
     }
 
-    /*
+    /**
+     * 
+     * @param String $filename
+     * @return Object
+     * 
      * info gets file info about a file, such as:
      * - date created
      * - date modified
@@ -1241,13 +1246,12 @@ class phpLive{
      * - hypotenuse length
      * - mime type
      */
-
     public function info($filename = null){
         if(is_string($filename)){
             $this->filename = $filename;
         }
-        $pi   = (object)pathinfo($filename);
-        $info = array();
+        $pi                = (object)pathinfo($filename);
+        $info              = array();
         $info['created']   = date("Y-m-d H:i:s", filectime($this->filename));
         $info['modified']  = date("Y-m-d H:i:s", filemtime($this->filename));
         $info['filesize']  = $this->fileSize($this->filename);
@@ -1279,13 +1283,13 @@ class phpLive{
     public function fileSize($path, $string = true, $precision = 2){
         $size = filesize($path);
         if($size >= 1073741824){
-            $fileSize = round($size / 1024 / 1024 / 1024, $precision)."GB";
+            $fileSize = round($size / 1024 / 1024 / 1024, $precision) . "GB";
         }elseif($size >= 1048576){
-            $fileSize = round($size / 1024 / 1024, $precision)."MB";
+            $fileSize = round($size / 1024 / 1024, $precision) . "MB";
         }elseif($size >= 1024){
-            $fileSize = round($size / 1024, $precision)."KB";
+            $fileSize = round($size / 1024, $precision) . "KB";
         }else{
-            $fileSize = $size.' bytes';
+            $fileSize = $size . ' bytes';
         }
         $this->functionName = __FUNCTION__;
         if($string)
@@ -1302,20 +1306,20 @@ class phpLive{
      */
 
     public function rowColor($nextColor = true, $reset = false){
-        static $_i_row_count = -1;
+        static $_i_row_count       = -1;
         if($reset)
-            $_i_row_count = -1;
+            $_i_row_count       = -1;
         if($nextColor)
             $_i_row_count++;
-        $ret          = ($_i_row_count % 2) ? $this->colors[0] : $this->colors[1];
+        $ret                = ($_i_row_count % 2) ? $this->colors[0] : $this->colors[1];
         $this->functionName = __FUNCTION__;
         return $ret;
     }
 
     public function dumpOpt($string, $return = false){
-        $find = array("\n", "\0", "\t", "\r");
-        $replace = array("\n".'\n', "\0".'\0', "\t".'\t', "\r".'\r');
-        $string = str_replace($find, $replace, $string);
+        $find               = array("\n", "\0", "\t", "\r");
+        $replace            = array("\n" . '\n', "\0" . '\0', "\t" . '\t', "\r" . '\r');
+        $string             = str_replace($find, $replace, $string);
         $this->functionName = __FUNCTION__;
         if($return)
             return $string;
@@ -1339,8 +1343,8 @@ class phpLive{
             $width  = $info[0];
             $height = $info[1];
             $mime   = preg_replace("/^.+?\//", "", $info['mime']);
-            if(function_exists('imagecreatefrom'.$mime)){
-                eval('$image = imagecreatefrom'.$mime.'($filename);');
+            if(function_exists('imagecreatefrom' . $mime)){
+                eval('$image = imagecreatefrom' . $mime . '($filename);');
             }else{
                 return $this;
             }
@@ -1352,7 +1356,7 @@ class phpLive{
                 $thumbHeight  = $height * ($thumbWidth / $width);
                 $thumb        = imagecreatetruecolor($thumbWidth, $thumbHeight);
                 imagecopyresampled($thumb, $image, 0, 0, 0, 0, $thumbWidth, $thumbHeight, $width, $height);
-                eval('$created = image'.$mime.'($thumb, "$this->thumbDir/$save_name"'.(($mime == 'jpeg') ? ', $thumbQuality' : '').');');
+                eval('$created = image' . $mime . '($thumb, "$this->thumbDir/$save_name"' . (($mime == 'jpeg') ? ', $thumbQuality' : '') . ');');
                 if($created){
                     $this->functionName = __FUNCTION__;
                     return $this;
@@ -1371,21 +1375,21 @@ class phpLive{
             $pi           = (object)pathinfo($filename);
         else
             $pi           = (object)pathinfo($new_filename);
-        $new_filename = $pi->dirname."/".$pi->filename;
+        $new_filename = $pi->dirname . "/" . $pi->filename;
         switch($type){
             case IMAGE_PNG:
                 imagealphablending($img, false);
                 imagesavealpha($img, true);
-                imagepng($img, $new_filename.".png", 9);
+                imagepng($img, $new_filename . ".png", 9);
                 break;
             case IMAGE_JPG:
-                imagejpeg($img, $new_filename.".jpg", 100);
+                imagejpeg($img, $new_filename . ".jpg", 100);
                 break;
             case IMAGE_GIF:
                 $colorTransparent = imagecolortransparent($im);
                 imagefill($img, 0, 0, $colorTransparent);
                 imagecolortransparent($img, $colorTransparent);
-                imagegif($img, $new_filename.".gif");
+                imagegif($img, $new_filename . ".gif");
                 break;
         }
         imagedestroy($img);
@@ -1469,9 +1473,9 @@ class phpLive{
         $pointer_position = $num_rows - $i;
         //Return pointer to original position
         if($pointer_position < $num_rows){
-            $p = $pointer_position - 1;
+            $p           = $pointer_position - 1;
             if($p < 0)
-                $p = 0;
+                $p           = 0;
             $this->dbReset((int)$p, $connection_id);
             $this->dbRow = $this->dbRow(null, $connection_id);
         }
@@ -1484,8 +1488,8 @@ class phpLive{
             $this->dbConnect();
         }
         if(is_string($queries)){
-            $query   = $queries;
-            $queries = array();
+            $query     = $queries;
+            $queries   = array();
             $queries[] = $query;
         }
         if(is_array($queries)){
@@ -1515,16 +1519,16 @@ class phpLive{
     }
 
     public function dbInsertId($connection_id = 0){
-        $connection_id = (int)$connection_id;
+        $connection_id      = (int)$connection_id;
         if(isset($this->db[$connection_id]))
-            $connection    = $this->db[$connection_id];
+            $connection         = $this->db[$connection_id];
         else
             return $this;
         $this->functionName = __FUNCTION__;
         if(function_exists("mysqli_insert_id"))
-            $this->string = mysqli_insert_id($connection);
+            $this->string       = mysqli_insert_id($connection);
         else
-            $this->string = mysql_insert_id($connection);
+            $this->string       = mysql_insert_id($connection);
         return $this;
     }
 
@@ -1537,7 +1541,7 @@ class phpLive{
             }
             if($this->dbNumRows($this->dbResult[$connection_id])->toInt() == 0){
                 $this->functionName = __FUNCTION__;
-                $this->string = $default;
+                $this->string       = $default;
                 return $this;
             }
             if(function_exists("mysqli_fetch_array")){
@@ -1546,7 +1550,7 @@ class phpLive{
                 $arr = mysql_fetch_array($this->dbResult[$connection_id]);
             }
             $this->functionName = __FUNCTION__;
-            $this->string = $arr[0];
+            $this->string       = $arr[0];
         }
         return $this;
     }
@@ -1558,33 +1562,33 @@ class phpLive{
             if(function_exists("mysqli_query")){
                 if(!$sql = mysqli_query($this->db[$connection_id], $query)){
                     $this->functionName = __FUNCTION__;
-                    $this->string = $default;
+                    $this->string       = $default;
                     return $this;
                 }
             }else{
                 if(!$sql = mysql_query($query, $this->db[$connection_id])){
                     $this->functionName = __FUNCTION__;
-                    $this->string = $default;
+                    $this->string       = $default;
                     return $this;
                 }
             }
             if(function_exists("mysqli_num_rows")){
                 if(mysqli_num_rows($sql) == 0){
                     $this->functionName = __FUNCTION__;
-                    $this->string = $default;
+                    $this->string       = $default;
                     return $this;
                 }
             }else{
                 if(mysql_num_rows($sql) == 0){
                     $this->functionName = __FUNCTION__;
-                    $this->string = $default;
+                    $this->string       = $default;
                     return $this;
                 }
             }
             if(function_exists("mysqli_fetch_array"))
-                $arr = mysqli_fetch_array($sql);
+                $arr          = mysqli_fetch_array($sql);
             else
-                $arr = mysql_fetch_array($sql);
+                $arr          = mysql_fetch_array($sql);
             $this->string = $arr[0];
             return $this;
         }
@@ -1593,7 +1597,7 @@ class phpLive{
 
     public function dbNumQueries(){
         $this->functionName = __FUNCTION__;
-        $this->string = $this->dbQueries;
+        $this->string       = $this->dbQueries;
         return $this;
     }
 
@@ -1601,11 +1605,11 @@ class phpLive{
         if(is_string($query)){
             $this->dbQuery($query, $connection_id);
             if(function_exists("mysqli_fetch_assoc"))
-                $this->dbRow = mysqli_fetch_assoc($this->dbResult[$connection_id]);
+                $this->dbRow        = mysqli_fetch_assoc($this->dbResult[$connection_id]);
             else
-                $this->dbRow = mysql_fetch_assoc($this->dbResult[$connection_id]);
+                $this->dbRow        = mysql_fetch_assoc($this->dbResult[$connection_id]);
             $this->functionName = __FUNCTION__;
-            $this->string = $this->dbRow;
+            $this->string       = $this->dbRow;
         }elseif($query == null){
             if(is_int($connection_id)){
                 if(function_exists("mysqli_fetch_assoc"))
@@ -1616,7 +1620,7 @@ class phpLive{
                 return $this;
             }
             $this->functionName = __FUNCTION__;
-            $this->list = $this->dbRow;
+            $this->list         = $this->dbRow;
             return $this->dbRow;
         }
         return $this;
@@ -1634,7 +1638,7 @@ class phpLive{
 
     public function dbNumRows($result = null, $connection_id = 0){
         if($result == null)
-            $result = $this->dbResult[$connection_id];
+            $result             = $this->dbResult[$connection_id];
         $this->functionName = __FUNCTION__;
         if(function_exists("mysqli_num_rows")){
             $this->string = mysqli_num_rows($result);
@@ -1673,12 +1677,12 @@ class phpLive{
 
     public function dbCols($result = null){
         if($result == null)
-            $result = $this->dbResult;
+            $result             = $this->dbResult;
         $this->functionName = __FUNCTION__;
         if(function_exists("mysqli_fetch_fields"))
-            $this->list = mysqli_fetch_fields($result);
+            $this->list         = mysqli_fetch_fields($result);
         else
-            $this->list = mysql_fetch_fields($result);
+            $this->list         = mysql_fetch_fields($result);
         return $this;
     }
 
@@ -1693,16 +1697,16 @@ class phpLive{
 
     public function process($file){
         $this->threadCount();
-        $new = $this->createEmptyThread();
-        $this->threads[$new]['thread'] = fsockopen($this->host, $this->port);
+        $new                               = $this->createEmptyThread();
+        $this->threads[$new]['thread']     = fsockopen($this->host, $this->port);
         $this->threads[$new]['processing'] = true;
-        $this->threads[$new]['thread_id'] = $new;
+        $this->threads[$new]['thread_id']  = $new;
         //$this->threads[$new] = fopen($file, 'rb');
         if(!$this->threads[$new]['thread']){
             return false;
         }
         $this->processing = true;
-        $out = "GET $file HTTP/1.1\r\n";
+        $out              = "GET $file HTTP/1.1\r\n";
         $out .= "Host: $this->host\r\n";
         $out .= "Connection: Close\r\n\r\n";
 
@@ -1724,9 +1728,9 @@ class phpLive{
     }
 
     public function createEmptyThread(){
-        $count = $this->thread_count++;
+        $count                 = $this->thread_count++;
         $this->threads[$count] = null;
-        $this->functionName = __FUNCTION__;
+        $this->functionName    = __FUNCTION__;
         return $count;
     }
 
@@ -1746,7 +1750,7 @@ class phpLive{
             return false;
         }
         if($pointer === false){
-            $this->exit[] = $pid;
+            $this->exit[]                      = $pid;
             $this->threads[$pid]['processing'] = false;
             return false;
         }
@@ -1754,7 +1758,7 @@ class phpLive{
             $opt = fread($pointer, 10000);
             if(feof($pointer)){
                 fclose($pointer);
-                $this->exit[] = $pid;
+                $this->exit[]                      = $pid;
                 $this->threads[$pid]['processing'] = false;
                 return false;
             }
@@ -1805,10 +1809,10 @@ class phpLive{
     }
 
     public function say($buffer, $host = "localhost", $port = 5565){
-        $fp = fsockopen($host, $port);
+        $fp                 = fsockopen($host, $port);
         fwrite($fp, $buffer);
         fclose($fp);
-        $this->string = $buffer;
+        $this->string       = $buffer;
         $this->functionName = __FUNCTION__;
         return $this;
     }
@@ -1828,7 +1832,7 @@ class phpLive{
             $read   = socket_read($client, $length);
             if(is_string($read)){
                 if(strlen($read) > 0){
-                    $this->string = $read;
+                    $this->string       = $read;
                     $this->functionName = __FUNCTION__;
                     return $this;
                 }
@@ -1839,9 +1843,9 @@ class phpLive{
 
     public function allow($socket_id = 0, &$client = null){
         if(!isset($this->sockets[$socket_id]))
-            $socket_id = $this->socketConnect();
-        $socket    = $this->sockets[$socket_id];
-        $this->clients[] = $client    = socket_accept($socket);
+            $socket_id          = $this->socketConnect();
+        $socket             = $this->sockets[$socket_id];
+        $this->clients[]    = $client             = socket_accept($socket);
         $this->functionName = __FUNCTION__;
         return true;
     }
@@ -1861,7 +1865,7 @@ class phpLive{
 
     public function push(){
         $this->functionName = __FUNCTION__;
-        $args = func_get_args();
+        $args               = func_get_args();
         foreach($args as $arg){
             $this->list[] = $arg;
         }
@@ -1870,7 +1874,7 @@ class phpLive{
 
     public function clean(){
         $this->functionName = __FUNCTION__;
-        $this->list = array();
+        $this->list         = array();
         return $this;
     }
 
@@ -1880,8 +1884,8 @@ class phpLive{
      */
 
     public function strIn(){
-        $input = fgets(STDIN);
-        $this->string = preg_replace("/\r|\n/", "", $input);
+        $input              = fgets(STDIN);
+        $this->string       = preg_replace("/\r|\n/", "", $input);
         $this->functionName = __FUNCTION__;
         return $this;
     }
@@ -1898,7 +1902,7 @@ class phpLive{
         if($live_feedback)
             $this->command("ping $host $param $count", true);
         else{
-            $this->string = $this->command("ping $host $param $count", false);
+            $this->string       = $this->command("ping $host $param $count", false);
             $this->functionName = __FUNCTION__;
             return $this;
         }
@@ -1908,28 +1912,27 @@ class phpLive{
         if((bool)$live_feedback){
             passthru($cmd);
         }else{
-            $this->string = shell_exec($cmd);
+            $this->string       = shell_exec($cmd);
             $this->functionName = __FUNCTION__;
             return $this;
         }
     }
 
-    public function in($in){
+    public function in(){
         $this->functionName = __FUNCTION__;
-        $args = func_get_args();
-        $i    = 0;
+        $args               = func_get_args();
+        $in                 = array_shift($args);
         foreach($args as $arg){
-            if($arg == $in && $i > 0)
+            if($arg == $in)
                 return $this;
-            $i++;
         }
         return false;
     }
 
     public function empties(){
         $this->functionName = __FUNCTION__;
-        $args = func_get_args();
-        $this->list = array();
+        $args               = func_get_args();
+        $this->list         = array();
         foreach($args as $k => $arg){
             if(empty($arg))
                 $this->list[] = $k;
@@ -1941,8 +1944,8 @@ class phpLive{
 
     public function blanks(){
         $this->functionName = __FUNCTION__;
-        $args = func_get_args();
-        $this->list = array();
+        $args               = func_get_args();
+        $this->list         = array();
         foreach($args as $k => $arg){
             if($this->blank($arg))
                 $this->list[] = $k;
@@ -1954,9 +1957,9 @@ class phpLive{
 
     public function ifelse(){
         $this->functionName = __FUNCTION__;
-        $args  = func_get_args();
-        $nargs = count($args);
-        for($i     = 0; $i < $nargs; $i+=2){
+        $args               = func_get_args();
+        $nargs              = count($args);
+        for($i = 0; $i < $nargs; $i+=2){
             if($i == $nargs - 1 && is_callable($args[$i])){
                 $this->string = call_user_func($args[$i]);
             }elseif($args[$i]){
@@ -1971,7 +1974,7 @@ class phpLive{
 
     public function random(){
         $this->functionName = __FUNCTION__;
-        $args = func_get_args();
+        $args               = func_get_args();
         if(count($args) < 2){
             return rand(0, getrandmax());
         }
@@ -1979,7 +1982,7 @@ class phpLive{
         foreach($args as $arg){
             $vals[] = $arg;
         }
-        $num    = mt_rand(0, count($vals) - 1);
+        $num          = mt_rand(0, count($vals) - 1);
         $this->string = $vals[$num];
         return $this;
     }
@@ -2023,12 +2026,12 @@ class phpLive{
                     if($sessionValue == null)
                         $sessionValue                                             = $this->string;
                     $_SESSION['phpLive'][$section['sessionRef']][$sessionKey] = $sessionValue;
-                    $this->functionName = __FUNCTION__;
+                    $this->functionName                                       = __FUNCTION__;
                     return $this;
                 }
             }
         }
-        $_SESSION['phpLive'][$sessionKey]                         = $sessionValue;
+        $_SESSION['phpLive'][$sessionKey] = $sessionValue;
         return $this;
     }
 
@@ -2049,7 +2052,7 @@ class phpLive{
                 if($section['className'] == $this->getCalledClass()){
                     if(isset($_SESSION['phpLive'][$section['sessionRef']][$sessionKey])){
                         $this->functionName = __FUNCTION__;
-                        $this->string = $_SESSION['phpLive'][$section['sessionRef']][$sessionKey];
+                        $this->string       = $_SESSION['phpLive'][$section['sessionRef']][$sessionKey];
                         return $this;
                     }
                 }
@@ -2151,10 +2154,10 @@ class phpLive{
 
     public function convertSmart($string = null){
         if($string == null)
-            $string = $this->string;
-        $search = array(chr(145), "‘", chr(146), "’", chr(147), "“", chr(148), "�?", chr(151), "—", chr(150), "–", chr(133), "…", chr(149), "•");
-        $replace = array("'", "'", "'", "'", '"', '"', '"', '"', '--', '--', '-', '-', '...', '...', "&bull;", "&bull;");
-        $this->string = str_replace($search, $replace, $string);
+            $string             = $this->string;
+        $search             = array(chr(145), "‘", chr(146), "’", chr(147), "“", chr(148), "�?", chr(151), "—", chr(150), "–", chr(133), "…", chr(149), "•");
+        $replace            = array("'", "'", "'", "'", '"', '"', '"', '"', '--', '--', '-', '-', '...', '...', "&bull;", "&bull;");
+        $this->string       = str_replace($search, $replace, $string);
         $this->functionName = __FUNCTION__;
         return $this;
     }
@@ -2189,7 +2192,7 @@ class phpLive{
     public function setLoggedIn($session_name = 'logged'){
         $this->startSession();
         $_SESSION[$session_name] = true;
-        $this->functionName = __FUNCTION__;
+        $this->functionName      = __FUNCTION__;
         return $this;
     }
 
@@ -2197,7 +2200,7 @@ class phpLive{
         $this->startSession();
         $_SESSION[$session_name] = false;
         unset($_SESSION[$session_name]);
-        $this->functionName = __FUNCTION__;
+        $this->functionName      = __FUNCTION__;
         return $this;
     }
 
@@ -2222,7 +2225,7 @@ class phpLive{
 
     public function setError($err_id, $err_descr){
         $this->errors[$err_id] = $err_descr;
-        $this->functionName = __FUNCTION__;
+        $this->functionName    = __FUNCTION__;
         return $this;
     }
 
@@ -2321,7 +2324,7 @@ class phpLive{
     }
 
     public function gets(){
-        $this->list = $_GETS;
+        $this->list         = $_GETS;
         $this->functionName = __FUNCTION__;
         return $this;
     }
@@ -2351,18 +2354,18 @@ class phpLive{
     }
 
     public function posts(){
-        $this->list = $_POST;
+        $this->list         = $_POST;
         $this->functionName = __FUNCTION__;
         return $this;
     }
 
     public function gp($key, $default = ""){
         if(isset($_GET[$key]))
-            $this->string = $_GET[$key];
+            $this->string       = $_GET[$key];
         elseif(isset($_POST[$key]))
-            $this->string = $_POST[$key];
+            $this->string       = $_POST[$key];
         else
-            $this->string = $default;
+            $this->string       = $default;
         $this->functionName = __FUNCTION__;
         return $this;
     }
@@ -2457,10 +2460,10 @@ class phpLive{
                 $this->string = preg_replace("/[a-zA-Z0-9 ]/", "", $value);
                 break;
             case EXTRACT_PHONE:
-                $value = $this->remove($value, REMOVE_SYMBOL);
-                $value = $this->remove($value, REMOVE_WHITE_SPACE);
+                $value        = $this->remove($value, REMOVE_SYMBOL);
+                $value        = $this->remove($value, REMOVE_WHITE_SPACE);
                 preg_match_all("/\d{10}/", $value, $matches);
-                $this->list = $matches[0];
+                $this->list   = $matches[0];
                 break;
             case EXTRACT_EMAIL:
 
@@ -2573,8 +2576,8 @@ class phpLive{
 
     public function blank($string = null){
         if($string == null)
-            $string = $this->string;
-        $string = str_replace(array(" ", "\t", "\n", "\r"), "", $string);
+            $string             = $this->string;
+        $string             = str_replace(array(" ", "\t", "\n", "\r"), "", $string);
         $this->functionName = __FUNCTION__;
         return (bool)empty($string);
     }
@@ -2587,9 +2590,9 @@ class phpLive{
 
     public function toTimestamp($date = null){
         if(is_null($date))
-            $date = $this->now();
+            $date               = $this->now();
         $this->functionName = __FUNCTION__;
-        $this->string = date("Y-m-d H:i:s", strtotime($date));
+        $this->string       = date("Y-m-d H:i:s", strtotime($date));
         return $this;
     }
 
@@ -2765,11 +2768,11 @@ class phpLive{
 
     public function dateSub($start_date, $interval){
         if(!is_int($start_date))
-            $start = date("Y-m-d H:i:s", strtotime($start_date));
+            $start              = date("Y-m-d H:i:s", strtotime($start_date));
         else
-            $start = date("Y-m-d H:i:s", $start_date);
+            $start              = date("Y-m-d H:i:s", $start_date);
         $this->functionName = __FUNCTION__;
-        return date("Y-m-d H:i:s", strtotime($start." -".$interval));
+        return date("Y-m-d H:i:s", strtotime($start . " -" . $interval));
     }
 
     /*
@@ -2780,11 +2783,11 @@ class phpLive{
 
     public function dateAdd($start_date, $interval){
         if(!is_int($start_date))
-            $start = date("Y-m-d H:i:s", strtotime($start_date));
+            $start              = date("Y-m-d H:i:s", strtotime($start_date));
         else
-            $start = date("Y-m-d H:i:s", $start_date);
+            $start              = date("Y-m-d H:i:s", $start_date);
         $this->functionName = __FUNCTION__;
-        return date("Y-m-d H:i:s", strtotime($start." +".$interval));
+        return date("Y-m-d H:i:s", strtotime($start . " +" . $interval));
     }
 
     /*
@@ -2818,7 +2821,7 @@ class phpLive{
             $date = strtotime($date);
         }
         $this->functionName = __FUNCTION__;
-        $this->string = date($format, $date);
+        $this->string       = date($format, $date);
         return $this;
     }
 
@@ -2832,16 +2835,16 @@ class phpLive{
         else{
             if(!$this->isValid($start, VALID_DATE))
                 return false;
-            $now       = $start;
+            $now = $start;
         }
-        $now_year  = $this->year($now);
-        $now_month = $this->month($now);
-        $now_day   = $this->day($now);
-        $dob_year  = $this->year($dob);
-        $dob_month = $this->month($dob);
-        $dob_day   = $this->day($dob);
-        $age       = $now_year - $dob_year;
-        if((int)($now_month.$now_day) < (int)($dob_month.$dob_day))
+        $now_year           = $this->year($now);
+        $now_month          = $this->month($now);
+        $now_day            = $this->day($now);
+        $dob_year           = $this->year($dob);
+        $dob_month          = $this->month($dob);
+        $dob_day            = $this->day($dob);
+        $age                = $now_year - $dob_year;
+        if((int)($now_month . $now_day) < (int)($dob_month . $dob_day))
             $age -= 1;
         $this->functionName = __FUNCTION__;
         return $age;
@@ -2873,10 +2876,10 @@ class phpLive{
             if($download_data == PHP_TMPFILE){
                 $download_data = $this->tmpFile;
             }
-            header("Content-Length: ".filesize($download_data).";");
+            header("Content-Length: " . filesize($download_data) . ";");
             readfile($download_data);
         }elseif($type == DOWNLOAD_STRING){
-            header("Content-Length: ".mb_strlen($download_data).";");
+            header("Content-Length: " . mb_strlen($download_data) . ";");
             echo $download_data;
         }
         $this->functionName = __FUNCTION__;
@@ -2884,8 +2887,8 @@ class phpLive{
     }
 
     public function zip($files = array(), $flag = ZIP_NEW){
-        $zip_id = $this->zipId;
-        $this->zip[] = new ZipArchive();
+        $zip_id        = $this->zipId;
+        $this->zip[]   = new ZipArchive();
         $this->zipId++;
         $this->tmpFile = tempnam("/tmp/", "zip");
         if($flag == ZIP_NEW){
@@ -2919,7 +2922,7 @@ class phpLive{
             $filename = $this->tmpFile;
         else{
             if(!preg_match("/^\/tmp\//", $filename)){
-                $filename = "/tmp/".preg_replace("/^\//", "", $filename);
+                $filename = "/tmp/" . preg_replace("/^\//", "", $filename);
             }
         }
         unlink($filename);
@@ -2933,7 +2936,7 @@ class phpLive{
      */
 
     public function inetAton($ip_address){
-        $this->string = (int)sprintf("%u\n", ip2long($ip_address));
+        $this->string       = (int)sprintf("%u\n", ip2long($ip_address));
         $this->functionName = __FUNCTION__;
         return $this;
     }
@@ -2944,13 +2947,13 @@ class phpLive{
      */
 
     public function inetNtoa($number){
-        $this->string = long2ip((int)$number);
+        $this->string       = long2ip((int)$number);
         $this->functionName = __FUNCTION__;
         return $this;
     }
 
     public function callback($callback, &$return = null){
-        $return = call_user_func($callback);
+        $return             = call_user_func($callback);
         $this->functionName = __FUNCTION__;
         return $this;
     }
@@ -2964,13 +2967,13 @@ class phpLive{
                 $random_hash   = md5(date('r', time()));
                 $mime_boundary = "==Multipart_Boundary_x{$random_hash}x";
                 $headers .= "Content-Type: multipart/mixed; boundary=\"$mime_boundary\";\r\n";
-                $message       = "--$mime_boundary\r\n".
-                        "Content-Type: multipart/mixed; boundary=\"{$mime_boundary}\";\r\n".
-                        "Content-Transfer-Encoding: 7bit\r\n\r\n".
-                        $message."\r\n\r\n";
+                $message       = "--$mime_boundary\r\n" .
+                        "Content-Type: multipart/mixed; boundary=\"{$mime_boundary}\";\r\n" .
+                        "Content-Transfer-Encoding: 7bit\r\n\r\n" .
+                        $message . "\r\n\r\n";
                 if(is_string($filepath))
                     $filepath      = array($filepath);
-                $filepath = array_filter($filepath);
+                $filepath      = array_filter($filepath);
                 foreach($filepath as $file){
                     if(empty($file)){
                         $data = chunk_split(base64_encode($this->content));
@@ -2978,11 +2981,11 @@ class phpLive{
                     }else{
                         $data = chunk_split(base64_encode(file_get_contents($file)));
                     }
-                    $message .= "--{$mime_boundary}\r\n".
-                            "Content-Type: multipart/alternative; name=\"".basename($file)."\"\r\n".
-                            "Content-Transfer-Encoding: base64\r\n".
-                            "Content-Disposition: attachment; filename=\"".basename($file)."\";\r\n\r\n".
-                            $data."\r\n\r\n".
+                    $message .= "--{$mime_boundary}\r\n" .
+                            "Content-Type: multipart/alternative; name=\"" . basename($file) . "\"\r\n" .
+                            "Content-Transfer-Encoding: base64\r\n" .
+                            "Content-Disposition: attachment; filename=\"" . basename($file) . "\";\r\n\r\n" .
+                            $data . "\r\n\r\n" .
                             "--{$mime_boundary}\r\n";
                 }
             }elseif($type == MAIL_HTML){
@@ -2995,14 +2998,14 @@ class phpLive{
     }
 
     public function each($callback, &$return = null, $overwrite_list = true){
-        $tempArr = array();
+        $tempArr   = array();
         $last_func = $this->functionName;
         $db_funcs  = array("dbQuery");
         if(in_array($last_func, $db_funcs)){
             while($this->dbRow()){
                 $tempArr[] = call_user_func($callback, $this->dbRow);
             }
-            $this->string = implode("", $tempArr);
+            $this->string       = implode("", $tempArr);
             $this->functionName = __FUNCTION__;
             return $this;
         }
@@ -3013,9 +3016,9 @@ class phpLive{
             }
         }
         if((bool)$overwrite_list)
-            $this->list = $tempArr;
+            $this->list         = $tempArr;
         $this->functionName = __FUNCTION__;
-        $return    = $tempArr;
+        $return             = $tempArr;
         return $this;
     }
 
@@ -3036,30 +3039,30 @@ class phpLive{
 
     public function isMobile(){
         $this->functionName = __FUNCTION__;
-        return (bool)preg_match("/".implode("|", $this->phones)."/i", $_SERVER["HTTP_USER_AGENT"]);
+        return (bool)preg_match("/" . implode("|", $this->phones) . "/i", $_SERVER["HTTP_USER_AGENT"]);
     }
 
     public function os(){
         $this->functionName = __FUNCTION__;
-        $os = php_uname('s');
+        $os                 = php_uname('s');
         if(preg_match("/windows/i", $os))
-            $this->string = 'windows';
+            $this->string       = 'windows';
         if(preg_match("/linux/i", $os))
-            $this->string = 'linux';
+            $this->string       = 'linux';
         if(preg_match("/unix/i", $os))
-            $this->string = 'unix';
+            $this->string       = 'unix';
         return $this;
     }
 
     public function format($string = null, $places = 0){
         if($string == null)
-            $string = $this->string;
+            $string       = $this->string;
         $this->string = number_format($string, $places);
         return $this;
     }
 
     public function versionComp($version1, $version2){
-        $this->string = version_compare($version1, $version2);
+        $this->string       = version_compare($version1, $version2);
         $this->functionName = __FUNCTION__;
         return $this;
     }
@@ -3073,8 +3076,8 @@ class phpLive{
 
     public function regCount($string, $subject = null, $delim = "/"){
         if($subject == null)
-            $subject = $this->string;
-        preg_match_all($delim.$string.$delim, $subject, $matches);
+            $subject      = $this->string;
+        preg_match_all($delim . $string . $delim, $subject, $matches);
         $this->string = count($matches[0]);
         return $this;
     }
@@ -3089,8 +3092,8 @@ class phpLive{
             header("HTTP/1.0 404 Not Found");
             header("Status: 404 Not Found");
         }
-        $request_page = $_SERVER['REQUEST_URI'];
-        $err          = <<<ERROR
+        $request_page       = $_SERVER['REQUEST_URI'];
+        $err                = <<<ERROR
 <h1>404 - Page Not Found</h1>
 <p>The page you are requesting (<b>$request_page</b>) was not found on this server.</p>
 <p>You may have:</p>
@@ -3107,7 +3110,8 @@ ERROR;
             if($exit){
                 exit;
             }
-        }else
+        }
+        else
             return $err;
     }
 
@@ -3118,14 +3122,18 @@ ERROR;
 // Create an instace of the phpLive class
 // phpLive can be called using one of the following:
 // $phplive, $_live, $live, $pl, $p
-$phplive = $_live   = $live    = $pl      = $p       = new phpLive();
+$phplive =
+        $_live   =
+        $live    =
+        $pl      =
+        $p       = new phpLive();
 
 // End phpLive auto creation of instance
 // Load phpLive extensions
 // phpLive extensions require php 5.3+
-if(is_dir(dirname(__FILE__)."/extensions")){
+if(is_dir(dirname(__FILE__) . "/extensions")){
     if(version_compare(PHP_VERSION, '5.3.0') >= 0){
-        foreach(glob(dirname(__FILE__)."/extensions/*.php") as $phpLive_ext_file){
+        foreach(glob(dirname(__FILE__) . "/extensions/*.php") as $phpLive_ext_file){
             require_once $phpLive_ext_file;
         }
     }
