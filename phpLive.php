@@ -106,21 +106,21 @@ class phpLive{
     protected $tmpFile       = "";
     // Private Read-Only Properties
     private $url, $ch, $links, $cleanData, $info, $title, $endingUrl, $httpCode, $loadTime;
-    private $processing = false, $urlQuery;
-    private $extension  = array();
+    private $processing    = false, $urlQuery;
+    private $extension     = array();
     // Public Properties
-    public $colors       = array("#ffffff", "#eeeeee");
-    public $coreLoaded   = false;
+    public $colors        = array("#ffffff", "#eeeeee");
+    public $coreLoaded    = false;
     public $thumbDir;
     public $content;
-    public $db           = array();
-    public $dbHostname, $dbUsername, $dbPassword, $dbDatabase, $dbPort, $dbResult, $dbRow, $dbQueries    = 0;
-    public $port         = 80;
-    public $host         = 'localhost';
-    public $list         = array();
-    public $post         = array();
-    public $functionName = null;
-    public $string       = "";
+    public $db            = array();
+    public $dbHostname, $dbUsername, $dbPassword, $dbDatabase, $dbPort, $dbResult, $dbRow, $dbQueries     = 0;
+    public $port          = 80;
+    public $host          = 'localhost';
+    public $list          = array();
+    public $post          = array();
+    public $functionName  = null;
+    public $string        = "";
 
     public function __construct(){
         $this->location = dirname(__FILE__);
@@ -341,17 +341,19 @@ class phpLive{
      *      $this->$instance = new $class();
      */
     public function loadPlugin($class, $info){
-        $info = (object)$info;
-        $file = $this->location . "/plugins/" . $info->root . "/" . $info->fileName;
+        $this->functionName = __FUNCTION__;
+        $info               = (object)$info;
+        $file               = $this->location . "/plugins/" . $info->root . "/" . $info->fileName;
         if(is_file($file)){
             require_once $file;
             $instance                   = (string)$info->instanceName;
-            $this->$instance            = new $class();
-            $this->functionName         = __FUNCTION__;
+            $info                       = (isset($info->information)) ? $info->information : "";
+            //$this->$instance            = new $class($info);
+            $reflection = new ReflectionClass($class);
+            $this->$instance = $reflection->newInstanceArgs(array($info));
             $this->extension[$instance] = $this->$instance;
             return $this->$instance;
         }
-        $this->functionName = __FUNCTION__;
         return false;
     }
 
@@ -401,9 +403,13 @@ class phpLive{
         $this->functionName = __FUNCTION__;
         if(empty($this->location))
             $this->location     = dirname(__FILE__);
-        $file               = $this->location . "/plugins/plugins.ini";
-        if(is_file($file))
-            return parse_ini_file($file, true);
+
+        $file = $this->location . "/plugins/plugins.php";
+        if(is_file($file)){
+            //return parse_ini_file($file, true);
+            require_once $file;
+            return $plugins;
+        }
         else
             return false;
     }
@@ -1369,12 +1375,14 @@ class phpLive{
     public function imageTo($type, $filename, $new_filename = null){
         if(!is_file($filename))
             return $this;
-        $image        = file_get_contents($filename);
-        $img          = imagecreatefromstring($image);
+        $image = file_get_contents($filename);
+        $img   = imagecreatefromstring($image);
+
         if($new_filename == null)
-            $pi           = (object)pathinfo($filename);
+            $pi = (object)pathinfo($filename);
         else
-            $pi           = (object)pathinfo($new_filename);
+            $pi = (object)pathinfo($new_filename);
+
         $new_filename = $pi->dirname . "/" . $pi->filename;
         switch($type){
             case IMAGE_PNG:
