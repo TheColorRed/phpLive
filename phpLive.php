@@ -785,20 +785,6 @@ class phpLive{
 
     /**
      *
-     * @param string $filename
-     * @param long $highlight
-     * @return \phpLive
-     *
-     * Highlights the contents of a file
-     */
-    public function hilightFile($filename, $highlight = HIGHLIGHT_PHP){
-        $this->highlight($filename, $highlight, INPUT_FILE);
-        $this->functionName = __FUNCTION__;
-        return $this;
-    }
-
-    /**
-     *
      * @param type $content
      * @param type $highlight
      * @return \phpLive
