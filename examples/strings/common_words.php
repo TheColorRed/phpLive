@@ -14,4 +14,4 @@ if($live->post()){
 	})->implode();
 }
 echo "<h2>Page Source</h2>";
-echo $live->highlight("common_words.php", HIGHLIGHT_PHP, INPUT_FILE);
+echo $live->highlight("common_words.php", HIGHLIGHT_PHP);

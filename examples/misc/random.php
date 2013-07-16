@@ -5,4 +5,4 @@ echo "<hr />";
 echo htmlentities($live->random("http://php.net", "http://phplive.org", "http://phpsnips.com")->getHttp());
 
 echo "<hr />";
-echo $live->highlight("random.php", HIGHLIGHT_PHP, INPUT_FILE);
+echo $live->highlight("random.php", HIGHLIGHT_PHP);

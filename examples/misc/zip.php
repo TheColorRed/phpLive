@@ -25,5 +25,5 @@ if($download){
 }else{
 	echo "<p><a href='?d=1'>Download Zip File</a></p>";
 	echo "<hr />";
-	echo $live->highlight("zip.php", HIGHLIGHT_PHP, INPUT_FILE);
+	echo $live->highlight("zip.php", HIGHLIGHT_PHP);
 }

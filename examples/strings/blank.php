@@ -26,5 +26,5 @@ FORM;
 </p>
 <hr />
 <?php
-echo $live->highlight("blank.php", HIGHLIGHT_PHP, INPUT_FILE);
+echo $live->highlight("blank.php", HIGHLIGHT_PHP);
 ?>

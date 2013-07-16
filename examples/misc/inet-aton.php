@@ -5,4 +5,4 @@ echo "<br />";
 echo $live->inetNToA(167773449);
 echo "<hr />";
 
-echo $live->highlight("inet-aton.php", HIGHLIGHT_PHP, INPUT_FILE);
+echo $live->highlight("inet-aton.php", HIGHLIGHT_PHP);

@@ -16,4 +16,4 @@ echo $live->dateAdd(time(), $range);
 <p>&nbsp;</p>
 <?php
 echo "<hr />";
-echo $live->highlight("date-add.php", HIGHLIGHT_PHP, INPUT_FILE);
+echo $live->highlight("date-add.php", HIGHLIGHT_PHP);

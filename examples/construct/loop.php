@@ -9,4 +9,4 @@ $live->loop(function(){
             $i++;
         }, 10);
 echo "<hr />";
-echo $live->highlight("loop.php", HIGHLIGHT_PHP, INPUT_FILE);
+echo $live->highlight("loop.php", HIGHLIGHT_PHP);

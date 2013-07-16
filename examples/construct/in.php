@@ -11,4 +11,4 @@ if($live->in($num, 1, 3, 5, 6)){
     echo "$num is not in the list";
 }
 echo "<hr />";
-echo $live->highlight("in.php", HIGHLIGHT_PHP, INPUT_FILE);
+echo $live->highlight("in.php", HIGHLIGHT_PHP);

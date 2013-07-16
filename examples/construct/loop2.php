@@ -12,4 +12,4 @@ $live->loop(function() use($live){
             echo "\n";
         });
 echo "<hr />";
-echo $live->highlight("listen.php", HIGHLIGHT_PHP, INPUT_FILE);
+echo $live->highlight("listen.php", HIGHLIGHT_PHP);

@@ -10,4 +10,4 @@ echo $live->ifelse($age == 0, function() use ($age){
             return "else fired! (\$age = $age)";
         });
 echo "<hr />";
-echo $live->highlight("ifelse.php", HIGHLIGHT_PHP, INPUT_FILE);
+echo $live->highlight("ifelse.php", HIGHLIGHT_PHP);

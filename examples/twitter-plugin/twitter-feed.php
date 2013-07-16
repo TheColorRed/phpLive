@@ -37,7 +37,7 @@ require_once '../../phpLive.php';
 				});
 			}
 			echo "<h2>Page Source</h2>";
-			echo $live->highlight("twitter-feed.php", HIGHLIGHT_PHP, INPUT_FILE);
+			echo $live->highlight("twitter-feed.php", HIGHLIGHT_PHP);
 		?>
 	</body>
 </html>

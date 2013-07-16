@@ -17,4 +17,4 @@ if($live->post()){
 	}
 }
 echo "<hr />";
-echo $live->highlight("empties.php", HIGHLIGHT_PHP, INPUT_FILE);
+echo $live->highlight("empties.php", HIGHLIGHT_PHP);

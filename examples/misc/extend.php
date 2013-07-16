@@ -24,4 +24,4 @@ ANIMAL;
 }
 
 echo "<hr />";
-echo $live->highlight("extend.php", HIGHLIGHT_PHP, INPUT_FILE);
+echo $live->highlight("extend.php", HIGHLIGHT_PHP);

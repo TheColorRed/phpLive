@@ -6,4 +6,4 @@ echo $live->each(function($v){
             return "$v<br />";
         })->implode("\n");
 echo "<hr />";
-echo $live->highlight("each.php", HIGHLIGHT_PHP, INPUT_FILE);
+echo $live->highlight("each.php", HIGHLIGHT_PHP);

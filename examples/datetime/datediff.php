@@ -13,4 +13,4 @@ echo $live->datediff($_POST["date1"], $_POST["date2"]);
 <p>&nbsp;</p>
 <?php
 echo "<hr />";
-echo $live->highlight("datediff.php", HIGHLIGHT_PHP, INPUT_FILE);
+echo $live->highlight("datediff.php", HIGHLIGHT_PHP);
