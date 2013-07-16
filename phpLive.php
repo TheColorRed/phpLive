@@ -768,8 +768,6 @@ class phpLive{
      * @return \phpLive
      *
      * Counts the number of lines in a string or file.
-     * INPUT_STRING uses a string as the input type
-     * INPUT_FILE use the string as the file name to read
      */
     public function lineCount($string = null){
         if(is_file($string)){
