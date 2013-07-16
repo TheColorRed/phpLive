@@ -16,6 +16,7 @@ class Database extends phpLive{
             $username = null,
             $password = null,
             $sql      = null
+
     ;
 
     public function __construct($data){
@@ -60,41 +61,51 @@ class Database extends phpLive{
     }
 
     public function select(){
-        $info       = $this->queryinfo(func_get_args());
+        $info = $this->queryinfo(func_get_args());
         $this->query($info->query, $info->args);
+
         $this->list = $this->sql->fetchAll();
         return $this;
-        return $this->sql->fetchAll();
     }
 
     public function insert(){
         $info = $this->queryinfo(func_get_args());
         $this->query($info->query, $info->args);
-        return $this->pdo->lastInsertId();
+
+        $this->string = $this->pdo->lastInsertId();
+        return $this;
     }
 
     public function update(){
         $info = $this->queryinfo(func_get_args());
         $this->query($info->query, $info->args);
-        return $this->sql->rowCount();
+
+        $this->string = $this->sql->rowCount();
+        return $this;
     }
 
     public function delete(){
         $info = $this->queryinfo(func_get_args());
         $this->query($info->query, $info->args);
-        return $this->sql->rowCount();
+
+        $this->string = $this->sql->rowCount();
+        return $this;
     }
 
     public function getFirst(){
         $info = $this->queryinfo(func_get_args());
         $this->query($info->query, $info->args);
-        return $this->sql->fetchColumn();
+
+        $this->string = $this->sql->rowCount();
+        return $this;
     }
 
     public function getEntry(){
         $info = $this->queryinfo(func_get_args());
         $this->query($info->query, $info->args);
-        return $this->sql->fetch();
+
+        $this->list = $this->sql->fetchAll();
+        return $this;
     }
 
 }
