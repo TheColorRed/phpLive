@@ -84,42 +84,45 @@ define("IMAGE_GIF", 3);
 class phpLive{
 
     // Protected Properties
-    protected $phpLiveDomain = 'http://www.phplive.org';
-    protected $version       = "1.0.0-alpha";
-    protected $location      = '';
-    protected $images        = array("jpg", "jpeg", "gif", "png");
-    protected $conn_id       = 0;
-    protected $exit          = array();
-    protected $threads       = array();
-    protected $thread_count  = 0;
-    protected $errors        = array();
-    protected $filename      = '';
-    protected $filebasename  = "";
-    protected $newFilename   = '';
-    protected $phones        = array("lg-", "htc", "sie", "mot-", "iphone", "android", "webos", "blackberry", "ipod", "nokia", "samsung", "sonyericsson");
-    protected $sockets       = array();
-    protected $sockId        = 0;
-    protected $clients       = array();
-    protected $zip           = array();
-    protected $zipId         = 0;
-    protected $memorySize    = 2;
-    protected $tmpFile       = "";
+    protected
+            $phpLiveDomain = 'http://www.phplive.org',
+            $version       = "1.0.0-alpha",
+            $location      = '',
+            $images        = array("jpg", "jpeg", "gif", "png"),
+            $conn_id       = 0,
+            $exit          = array(),
+            $threads       = array(),
+            $thread_count  = 0,
+            $errors        = array(),
+            $filename      = '',
+            $filebasename  = "",
+            $newFilename   = '',
+            $phones        = array("lg-", "htc", "sie", "mot-", "iphone", "android", "webos", "blackberry", "ipod", "nokia", "samsung", "sonyericsson"),
+            $sockets       = array(),
+            $sockId        = 0,
+            $clients       = array(),
+            $zip           = array(),
+            $zipId         = 0,
+            $memorySize    = 2,
+            $tmpFile       = "";
     // Private Read-Only Properties
-    private $url, $ch, $links, $cleanData, $info, $title, $endingUrl, $httpCode, $loadTime;
-    private $processing    = false, $urlQuery;
-    private $extension     = array();
+    private
+            $url, $ch, $links, $cleanData, $info, $title, $endingUrl, $httpCode, $loadTime,
+            $processing    = false, $urlQuery,
+            $extension     = array();
     // Public Properties
-    public $colors        = array("#ffffff", "#eeeeee");
-    public $coreLoaded    = false;
-    public $thumbDir;
-    public $content;
-    public $db            = array();
-    public $port          = 80;
-    public $host          = 'localhost';
-    public $list          = array();
-    public $post          = array();
-    public $functionName  = null;
-    public $string        = "";
+    public
+            $thumbDir,
+            $content,
+            $colors        = array("#ffffff", "#eeeeee"),
+            $coreLoaded    = false,
+            $db            = array(),
+            $port          = 80,
+            $host          = 'localhost',
+            $list          = array(),
+            $post          = array(),
+            $functionName  = null,
+            $string        = "";
 
     public function __construct(){
         $this->location = dirname(__FILE__);
@@ -127,38 +130,39 @@ class phpLive{
     }
 
     public function __get($name){
+        $this->location = dirname(__FILE__);
+
         switch($name){
-            case 'links': $ret            = $this->links;
+            case 'links': $ret = $this->links;
                 break;
             case 'location':
                 if(empty($this->location))
-                    $this->location = dirname(__FILE__);
-                $ret            = $this->location;
+                    $ret = $this->location;
                 break;
-            case 'data': $ret            = $this->content;
+            case 'data': $ret = $this->content;
                 break;
-            case 'url': $ret            = $this->url;
+            case 'url': $ret = $this->url;
                 break;
-            case 'info': $ret            = $this->info;
+            case 'info': $ret = $this->info;
                 break;
-            case 'endingUrl': $ret            = $this->endingUrl;
+            case 'endingUrl': $ret = $this->endingUrl;
                 break;
-            case 'httpCode': $ret            = $this->httpCode;
+            case 'httpCode': $ret = $this->httpCode;
                 break;
-            case 'loadTime': $ret            = $this->loadTime;
+            case 'loadTime': $ret = $this->loadTime;
                 break;
-            case 'cleanData': $ret            = $this->cleanData;
+            case 'cleanData': $ret = $this->cleanData;
                 break;
-            case 'title': $ret            = $this->title;
+            case 'title': $ret = $this->title;
                 break;
-            case 'exit': $ret            = $this->exit;
+            case 'exit': $ret = $this->exit;
                 break;
             case 'processing': $this->poll();
-                $ret            = $this->processing;
+                $ret = $this->processing;
                 break;
-            case 'errors': $ret            = $this->errors;
+            case 'errors': $ret = $this->errors;
                 break;
-            case 'urlQuery': $ret            = $this->urlQuery;
+            case 'urlQuery': $ret = $this->urlQuery;
                 break;
             default:
                 if(array_key_exists($name, $this->extension)){
@@ -348,8 +352,8 @@ class phpLive{
             $instance                   = (string)$info->instanceName;
             $info                       = (isset($info->information)) ? $info->information : "";
             //$this->$instance            = new $class($info);
-            $reflection = new ReflectionClass($class);
-            $this->$instance = $reflection->newInstanceArgs(array($info));
+            $reflection                 = new ReflectionClass($class);
+            $this->$instance            = $reflection->newInstanceArgs(array($info));
             $this->extension[$instance] = $this->$instance;
             return $this->$instance;
         }
