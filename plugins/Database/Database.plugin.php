@@ -1,26 +1,21 @@
 <?php
 
-/*
-  define("PDO_DATABASE", "mysql");
-  define("PDO_DBNAME", "test");
-  define("PDO_HOST", "localhost");
-  define("PDO_USER", "root");
-  define("PDO_PASSWD", "afrid123");
- */
-
 /**
- * @property PDO $db PDO Class
+ * @property PDO $pdo PDO Class
  * @property PDOStatement $sql PDO Statement
+ * 
+ * This class ueses the instance name of $db by default. 
+ * Access to this class is as follows: $live->db->methodName();
  */
 class Database extends phpLive{
 
-    private $db       = null,
+    private $pdo      = null,
             $dbtype   = null,
             $database = null,
             $hostname = null,
             $username = null,
-            $password = null
-
+            $password = null,
+            $sql      = null
     ;
 
     public function __construct($data){
@@ -32,20 +27,28 @@ class Database extends phpLive{
         parent::__construct();
     }
 
+    public function __get($name){
+        parent::__get($name);
+    }
+
     public function connect(){
-        $this->db = new PDO("$this->dbtype:dbname=$this->database;host=$this->hostname;", $this->username, $this->password);
+        $this->pdo = new PDO("$this->dbtype:dbname=$this->database;host=$this->hostname;", $this->username, $this->password);
     }
 
     private function isConnected(){
-        if($this->db === null){
+        if($this->pdo === null){
             $this->connect();
         }
     }
 
     private function query($query, $args){
         $this->isConnected();
-        $this->sql = $this->db->prepare($query, $args);
-        $this->sql->execute($args);
+        try{
+            $this->sql = $this->pdo->prepare($query, $args);
+            $this->sql->execute($args);
+        }catch(PDOException $e){
+            throw $e;
+        }
     }
 
     private function queryinfo($args){
@@ -57,8 +60,9 @@ class Database extends phpLive{
     }
 
     public function select(){
-        $info = $this->queryinfo(func_get_args());
+        $info       = $this->queryinfo(func_get_args());
         $this->query($info->query, $info->args);
+        $this->list = $this->sql->fetchAll();
         return $this;
         return $this->sql->fetchAll();
     }
@@ -66,7 +70,7 @@ class Database extends phpLive{
     public function insert(){
         $info = $this->queryinfo(func_get_args());
         $this->query($info->query, $info->args);
-        return $this->db->lastInsertId();
+        return $this->pdo->lastInsertId();
     }
 
     public function update(){

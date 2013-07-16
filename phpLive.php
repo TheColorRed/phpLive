@@ -1085,7 +1085,7 @@ class phpLive{
      *
      * Opens a file for reading
      */
-    public function open($filename, $mode = 'rb'){
+    public function openFIle($filename, $mode = 'rb'){
         $this->close();
         $this->filename     = $filename;
         $this->handle       = fopen("$filename", $mode);
@@ -1099,7 +1099,7 @@ class phpLive{
      *
      * Closes an open file
      */
-    public function close(){
+    public function closeFile(){
         if(is_resource($this->handle)){
             fclose($this->handle);
             $this->handle       = null;
@@ -1116,7 +1116,7 @@ class phpLive{
      *
      * Reads a file into the global string
      */
-    public function read($filename){
+    public function readFile($filename){
         $this->open($filename);
         $this->string       = fread($this->handle, filesize($filename));
         $this->functionName = __FUNCTION__;
@@ -1132,7 +1132,7 @@ class phpLive{
      *
      * Saves a file onto the server
      */
-    public function save($filename, $content = null, $overwrite = true){
+    public function saveFile($filename, $content = null, $overwrite = true){
         $this->open($filename, 'wb');
         if($content == PHP_TMPFILE){
             $this->content = file_get_contents($this->tmpFile);
@@ -1169,7 +1169,7 @@ class phpLive{
      *
      * Appends content to the end of a file
      */
-    public function append($filename = null, $content = null){
+    public function appendToFile($filename = null, $content = null){
         if(is_string($filename)){
             $this->filename = $filename;
         }
@@ -1191,7 +1191,7 @@ class phpLive{
      *
      * Duplicates a file on the server example: file.php -> file_1.php -> file_2.php
      */
-    public function duplicate($filename = null){
+    public function duplicateFile($filename = null){
         if(is_string($filename)){
             $this->filename = $filename;
         }
@@ -1208,7 +1208,7 @@ class phpLive{
      *
      * removes all the content from a file
      */
-    public function truncate($filename = null){
+    public function truncateFile($filename = null){
         if(is_string($filename)){
             $this->filename = $filename;
         }
@@ -1224,7 +1224,7 @@ class phpLive{
      *
      * Deletes a file on the server
      */
-    public function delete($filename = null){
+    public function deleteFile($filename = null){
         if(is_string($filename)){
             $this->filename = $filename;
         }
@@ -3018,7 +3018,7 @@ class phpLive{
             return $this;
         }
         foreach($this->list as $key => $value){
-            $val = call_user_func($callback, $key, $value);
+            $val = call_user_func($callback, $value, $key);
             if(!empty($val)){
                 $tempArr[] = $val;
             }
