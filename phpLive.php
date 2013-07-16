@@ -801,7 +801,6 @@ class phpLive{
      *
      * @param type $content
      * @param type $highlight
-     * @param type $input
      * @return \phpLive
      *
      * Syntax highlights php/html/css
