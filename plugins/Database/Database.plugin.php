@@ -9,13 +9,14 @@
  */
 class Database extends phpLive{
 
-    private $pdo      = null,
-            $dbtype   = null,
-            $database = null,
-            $hostname = null,
-            $username = null,
-            $password = null,
-            $sql      = null
+    private $pdo        = null,
+            $dbtype     = null,
+            $database   = null,
+            $hostname   = null,
+            $username   = null,
+            $password   = null,
+            $sql        = null,
+            $queryCount = 0
 
     ;
 
@@ -47,6 +48,7 @@ class Database extends phpLive{
         try{
             $this->sql = $this->pdo->prepare($query, $args);
             $this->sql->execute($args);
+            $this->queryCount++;
         }catch(PDOException $e){
             throw $e;
         }
@@ -58,6 +60,11 @@ class Database extends phpLive{
             $args = $args[0];
         }
         return (object)array("query" => $query, "args"  => $args);
+    }
+    
+    public function queryCount(){
+        $this->string = $this->queryCount;
+        return $this;
     }
 
     public function select(){
