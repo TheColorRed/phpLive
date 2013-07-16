@@ -378,7 +378,7 @@ class phpLive{
         }
         $ini = $this->allPluginSettings();
         if($ini){
-            if($loadPlugins == null){
+            if($loadPlugins === null){
                 foreach($ini as $sectionClass => $section){
                     $this->loadPlugin($sectionClass, $section);
                 }
@@ -425,7 +425,7 @@ class phpLive{
      */
     public function pluginSettings($class = null, $return_object = true){
         $ini                = $this->allPluginSettings();
-        if($class == null)
+        if($class === null)
             $class              = $this->getCalledClass();
         $this->functionName = __FUNCTION__;
         if($return_object)
@@ -457,7 +457,7 @@ class phpLive{
      * $this->links an array of links (other than javascript links) that were found on the page
      */
     public function getHttp($url = null, $other_params = null){
-        if($url == null){
+        if($url === null){
             if(filter_var($this->string, FILTER_VALIDATE_URL)){
                 $this->url = $this->string;
             }
@@ -503,7 +503,7 @@ class phpLive{
      * If no input data is given use the global string
      */
     public function getCleanData($data = null){
-        if($data == null){
+        if($data === null){
             $data = $this->string;
         }
         $clean              = preg_replace("/\<(script|style).*\>.*\<\/(script|style)\>/isU", " ", $data);
@@ -530,7 +530,7 @@ class phpLive{
      * If no data is pass in, use the global string
      */
     public function getTitle($data = null){
-        if($data == null){
+        if($data === null){
             $data = $this->string;
         }
         preg_match("/\<title.*\>(.*)\<\/title\>/isU", $data, $matches);
@@ -558,7 +558,7 @@ class phpLive{
      * If no data is passed, use the global string
      */
     public function getLinks($data = null){
-        if($data == null){
+        if($data === null){
             $data = $this->string;
         }
         preg_match_all("/\<a.+?href=(\"|')(?!javascript:|#)(.+?)(\"|')/i", $data, $matches);
@@ -613,7 +613,7 @@ class phpLive{
      */
     public function hash($content = null, $type = 'md5'){
         $this->functionName = __FUNCTION__;
-        if($content == null)
+        if($content === null)
             $content            = $this->string;
         if(in_array($type, hash_algos())){
             $this->string = hash($type, $content);
@@ -637,7 +637,7 @@ class phpLive{
         $this->functionName = __FUNCTION__;
         $start              = preg_quote($start, "/");
         $end                = preg_quote($end, "/");
-        if($data == null){
+        if($data === null){
             if($dataType == DATA_CLEAN)
                 $data = $this->cleanData;
             elseif($dataType == DATA_HTML)
@@ -685,7 +685,7 @@ class phpLive{
      * If no array is given, use the global list
      */
     public function implode($glue = " ", $array = null){
-        if($array == null)
+        if($array === null)
             $array              = $this->list;
         if(!is_array($array))
             return $this;
@@ -703,7 +703,7 @@ class phpLive{
      * @return \phpLive
      */
     public function maxlen($length, $difference = 3, $end = "...", $string = null){
-        if($string == null)
+        if($string === null)
             $string   = $this->string;
         $length   = (int)$length;
         $words    = explode(" ", $string);
@@ -738,7 +738,7 @@ class phpLive{
      * Converts spaces to tabs
      */
     public function spToTab($spaces = 4, $string = null){
-        if($string == null)
+        if($string === null)
             $string             = $this->string;
         $this->string       = preg_replace("/(&nbsp;){" . $spaces . "}| {" . $spaces . "}/", "\t", $string);
         $this->functionName = __FUNCTION__;
@@ -754,7 +754,7 @@ class phpLive{
      * Converts tabs to spaces
      */
     public function tabToSp($spaces = 4, $string = null){
-        if($string == null)
+        if($string === null)
             $string             = $this->string;
         $this->string       = preg_replace("/\t/", str_repeat("&nbsp;", $spaces), $string);
         $this->functionName = __FUNCTION__;
@@ -771,13 +771,13 @@ class phpLive{
      * INPUT_STRING uses a string as the input type
      * INPUT_FILE use the string as the file name to read
      */
-    public function lineCount($string = null, $input = INPUT_STRING){
-        if($input == INPUT_STRING){
-            if($string == null)
+    public function lineCount($string = null){
+        if(is_file($string)){
+            $string = file_get_contents($string);
+        }else{
+            if($string === null)
                 $string = $this->string;
         }
-        if($input == INPUT_FILE)
-            $string             = file_get_contents($string);
         $this->string       = count(explode("\n", $string));
         $this->functionName = __FUNCTION__;
         return $this;
@@ -799,23 +799,6 @@ class phpLive{
 
     /**
      *
-     * @param string $string
-     * @param type $highlight
-     * @return \phpLive
-     *
-     * Highlights the contents of a string passed in
-     */
-    public function higlightString($string = null, $highlight = HIGHLIGHT_PHP){
-        if($string === null){
-            $string = $this->string;
-        }
-        $this->highlight($string, $highlight, INPUT_STRING);
-        $this->functionName = __FUNCTION__;
-        return $this;
-    }
-
-    /**
-     *
      * @param type $content
      * @param type $highlight
      * @param type $input
@@ -823,75 +806,27 @@ class phpLive{
      *
      * Syntax highlights php/html/css
      */
-    public function highlight($content = null, $highlight = HIGHLIGHT_PHP, $input = INPUT_STRING){
-        if($content == null)
-            $content      = $this->string;
+    public function highlight($content = null, $highlight = HIGHLIGHT_PHP){
+        if($content === null)
+            $content = $this->string;
+
         $this->string = "";
         switch($highlight){
             case HIGHLIGHT_PHP:
-                if($input == INPUT_STRING){
+                if(is_file($content)){
+                    $this->string = highlight_file($content, true);
+                }else{
                     $this->string = highlight_string($content, true);
-                }elseif($input == INPUT_FILE){
-                    if(is_file($content))
-                        $this->string = highlight_file($content, true);
-                    else
-                        return $this;
                 }
                 break;
             case HIGHLIGHT_HTML:
-                if($input == INPUT_FILE){
+                if(is_file($content)){
                     $content = file_get_contents($content);
                 }
-                $iscomment = false;
-                $tag       = "#0000ff";
-                $att       = "#ff0000";
-                $val       = "#8000ff";
-                $com       = "#34803a";
-                $doc       = "#bf9221";
-                $tmpStr    = "";
-                $sp        = preg_split('/(<!--.*?-->|<style.*?>.*?<\/style>)/s', $content, -1, PREG_SPLIT_DELIM_CAPTURE);
-                foreach($sp as $split){
-                    $split = htmlentities($split, ENT_QUOTES, "UTF-8", false);
-                    if(preg_match("/&lt;!--/i", $split)){
-                        $tmpStr .= '<span style="color:' . $com . ';font-style:italic;">' . $split . '</span>';
-                    }elseif(preg_match("/&lt;style/i", $split)){
-                        //print_r($split);exit;
-                        $spl = preg_split("/(&lt;style.*?&gt;|&lt;\/style&gt;)/i", $split, -1, PREG_SPLIT_DELIM_CAPTURE);
-                        //print_r($spl);
-                        $tmpStr .= preg_replace(array(
-                            '~(\s[a-z].*?=)~',
-                            '~(&lt;([a-z?]|!DOCTYPE).*?&gt;)~'
-                                ), array(
-                            '<span style="color:' . $att . ';">$1</span>',
-                            '<span style="color:' . $tag . ';">$1</span>'
-                                ), $spl[1]);
-                        $tmpStr .= $this->highlight($spl[2], HIGHLIGHT_CSS);
-                        $tmpStr .= preg_replace("~(&lt;/[a-zA-Z].*?&gt;)~", '<span style="color:' . $tag . ';">$1</span>', $spl[3]);
-                    }else{
-                        $find    = array(
-                            '~(\s[a-z].*?=)~', // Highlight the attributes
-                            '~(&quot;[a-zA-Z0-9\/].*?&quot;)~', // Highlight the values
-                            '~(&lt;([a-z?]|!DOCTYPE).*?&gt;)~', // Highlight the beginning of the opening tag
-                            '~(&lt;/[a-zA-Z].*?&gt;)~', // Highlight the closing tag
-                            '~(&amp;.*?;)~', // Stylize HTML entities
-                            '~(&lt;!DOCTYPE.*?&gt;)~', // DOCTYPE
-                        );
-                        $replace = array(
-                            '<span style="color:' . $att . ';">$1</span>',
-                            '<span style="color:' . $val . ';">$1</span>',
-                            '<span style="color:' . $tag . ';">$1</span>',
-                            '<span style="color:' . $tag . ';">$1</span>',
-                            '<span style="font-style:italic;">$1</span>',
-                            '<span style="color:' . $doc . ';">$1</span>',
-                        );
-                        $tmpStr .= preg_replace($find, $replace, $split);
-                    }
-                    $iscomment = !$iscomment;
-                }
-                $this->string = $tmpStr;
+                $this->string = $this->highlightHTML($content);
                 break;
             case HIGHLIGHT_CSS:
-                if($input == INPUT_FILE)
+                if(is_file($content))
                     $this->string = file_get_contents($content);
                 else
                     $this->string = $content;
@@ -900,6 +835,56 @@ class phpLive{
         }
         $this->functionName = __FUNCTION__;
         return $this;
+    }
+
+    public function highlightHTML($content){
+        $iscomment = false;
+        $tag       = "#0000ff";
+        $att       = "#ff0000";
+        $val       = "#8000ff";
+        $com       = "#34803a";
+        $doc       = "#bf9221";
+        $tmpStr    = "";
+        $sp        = preg_split('/(<!--.*?-->|<style.*?>.*?<\/style>)/s', $content, -1, PREG_SPLIT_DELIM_CAPTURE);
+        foreach($sp as $split){
+            $split = htmlentities($split, ENT_QUOTES, "UTF-8", false);
+            if(preg_match("/&lt;!--/i", $split)){
+                $tmpStr .= '<span style="color:' . $com . ';font-style:italic;">' . $split . '</span>';
+            }elseif(preg_match("/&lt;style/i", $split)){
+                //print_r($split);exit;
+                $spl = preg_split("/(&lt;style.*?&gt;|&lt;\/style&gt;)/i", $split, -1, PREG_SPLIT_DELIM_CAPTURE);
+                //print_r($spl);
+                $tmpStr .= preg_replace(array(
+                    '~(\s[a-z].*?=)~',
+                    '~(&lt;([a-z?]|!DOCTYPE).*?&gt;)~'
+                        ), array(
+                    '<span style="color:' . $att . ';">$1</span>',
+                    '<span style="color:' . $tag . ';">$1</span>'
+                        ), $spl[1]);
+                $tmpStr .= $this->highlight($spl[2], HIGHLIGHT_CSS);
+                $tmpStr .= preg_replace("~(&lt;/[a-zA-Z].*?&gt;)~", '<span style="color:' . $tag . ';">$1</span>', $spl[3]);
+            }else{
+                $find    = array(
+                    '~(\s[a-z].*?=)~', // Highlight the attributes
+                    '~(&quot;[a-zA-Z0-9\/].*?&quot;)~', // Highlight the values
+                    '~(&lt;([a-z?]|!DOCTYPE).*?&gt;)~', // Highlight the beginning of the opening tag
+                    '~(&lt;/[a-zA-Z].*?&gt;)~', // Highlight the closing tag
+                    '~(&amp;.*?;)~', // Stylize HTML entities
+                    '~(&lt;!DOCTYPE.*?&gt;)~', // DOCTYPE
+                );
+                $replace = array(
+                    '<span style="color:' . $att . ';">$1</span>',
+                    '<span style="color:' . $val . ';">$1</span>',
+                    '<span style="color:' . $tag . ';">$1</span>',
+                    '<span style="color:' . $tag . ';">$1</span>',
+                    '<span style="font-style:italic;">$1</span>',
+                    '<span style="color:' . $doc . ';">$1</span>',
+                );
+                $tmpStr .= preg_replace($find, $replace, $split);
+            }
+            $iscomment = !$iscomment;
+        }
+        return $tmpStr;
     }
 
     /**
@@ -911,7 +896,7 @@ class phpLive{
      * This is a css lexer that tokenizes and colorizes css
      */
     public function highlightCSS($css = null, $pre = false){
-        if($css == null)
+        if($css === null)
             $css                = $this->string;
         $this->functionName = __FUNCTION__;
         $tokens             = array();
@@ -1039,7 +1024,7 @@ class phpLive{
      * $min_len is the minimum length a string must be to qualify to ignore words such as: a, in, the
      */
     public function commonWords($string = null, $max = -1, $min_len = 4){
-        if($string == null)
+        if($string === null)
             $string  = $this->string;
         $string  = $this->getCleanData()->remove(null, REMOVE_SYMBOL)->remove(null, REMOVE_NUMBER)->toString();
         $words   = explode(" ", $string);
@@ -1069,7 +1054,7 @@ class phpLive{
      * Convert a windows formatted string to unix formatted string
      */
     public function unixFormat($string = null){
-        if($string == null)
+        if($string === null)
             $string             = $this->string;
         $this->string       = preg_replace("/\r\n/", "\n", $string);
         $this->functionName = __FUNCTION__;
@@ -1381,7 +1366,7 @@ class phpLive{
         $image = file_get_contents($filename);
         $img   = imagecreatefromstring($image);
 
-        if($new_filename == null)
+        if($new_filename === null)
             $pi = (object)pathinfo($filename);
         else
             $pi = (object)pathinfo($new_filename);
@@ -1744,7 +1729,7 @@ class phpLive{
         foreach($ini as $section){
             if(isset($section['className'])){
                 if($section['className'] == $this->getCalledClass()){
-                    if($sessionValue == null)
+                    if($sessionValue === null)
                         $sessionValue                                             = $this->string;
                     $_SESSION['phpLive'][$section['sessionRef']][$sessionKey] = $sessionValue;
                     $this->functionName                                       = __FUNCTION__;
@@ -1874,7 +1859,7 @@ class phpLive{
      */
 
     public function convertSmart($string = null){
-        if($string == null)
+        if($string === null)
             $string             = $this->string;
         $search             = array(chr(145), "‘", chr(146), "’", chr(147), "“", chr(148), "�?", chr(151), "—", chr(150), "–", chr(133), "…", chr(149), "•");
         $replace            = array("'", "'", "'", "'", '"', '"', '"', '"', '--', '--', '-', '-', '...', '...', "&bull;", "&bull;");
@@ -1952,7 +1937,7 @@ class phpLive{
 
     public function getError($err_id = null){
         $this->functionName = __FUNCTION__;
-        if($err_id == null)
+        if($err_id === null)
             return $this->errors;
         if(isset($this->errors[$err_id]))
             return $this->errors[$err_id];
@@ -2198,7 +2183,7 @@ class phpLive{
     }
 
     public function remove($value = null, $type = REMOVE_WHITE_SPACE){
-        if($value == null)
+        if($value === null)
             $value = $this->string;
         switch($type){
             case REMOVE_SYMBOL:
@@ -2296,7 +2281,7 @@ class phpLive{
     }
 
     public function blank($string = null){
-        if($string == null)
+        if($string === null)
             $string             = $this->string;
         $string             = str_replace(array(" ", "\t", "\n", "\r"), "", $string);
         $this->functionName = __FUNCTION__;
@@ -2474,7 +2459,7 @@ class phpLive{
      */
 
     public function unixTimestamp($date = null){
-        if($date == null){
+        if($date === null){
             return strtotime(date("Y-m-d H:i:s"));
         }
         $this->functionName = __FUNCTION__;
@@ -2639,7 +2624,7 @@ class phpLive{
     }
 
     public function tmpDelete($filename = null){
-        if($filename == null)
+        if($filename === null)
             $filename = $this->tmpFile;
         else{
             if(!preg_match("/^\/tmp\//", $filename)){
@@ -2776,7 +2761,7 @@ class phpLive{
     }
 
     public function format($string = null, $places = 0){
-        if($string == null)
+        if($string === null)
             $string       = $this->string;
         $this->string = number_format($string, $places);
         return $this;
@@ -2796,7 +2781,7 @@ class phpLive{
      */
 
     public function regCount($string, $subject = null, $delim = "/"){
-        if($subject == null)
+        if($subject === null)
             $subject      = $this->string;
         preg_match_all($delim . $string . $delim, $subject, $matches);
         $this->string = count($matches[0]);
