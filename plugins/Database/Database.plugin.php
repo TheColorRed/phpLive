@@ -38,23 +38,23 @@ class Database extends phpLive{
         if(preg_match("/findBy(.+)/", $name, $matches)){
             if($this->validName($matches[1])){
                 return $this->find($matches[1], $args);
+            }else{
+                throw new Exception("Invalid Column Name.");
             }
         }
     }
 
-    private function find($column, $args){
-        if(isset($args[1]) && !empty($args[1]) && $this->validName($args[1])){
-            $this->table = $args[1];
-        }
-        if(isset($args[1])){
-            unset($args[1]);
-        }
-        $this->select("select * from $this->table where $column = ?", $args[0]);
-        return $this;
-    }
-
     public function connect(){
         $this->pdo = new PDO("$this->dbtype:dbname=$this->database;host=$this->hostname;", $this->username, $this->password);
+    }
+
+    public function setTable($table){
+        if($this->validName($table)){
+            $this->table = $table;
+        }else{
+            throw new Exception("Invalid Table Name.");
+        }
+        return $this;
     }
 
     private function isConnected(){
@@ -140,6 +140,17 @@ class Database extends phpLive{
             return false;
         }
         return true;
+    }
+
+    private function find($column, $args){
+        if(isset($args[1]) && !empty($args[1])){
+            $this->setTable($args[1]);
+        }
+        if(empty($this->table)){
+            throw new Exception("No table is set.");
+        }
+        $this->select("select * from $this->table where $column = ?", $args[0]);
+        return $this;
     }
 
 }
