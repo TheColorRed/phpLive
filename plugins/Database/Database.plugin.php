@@ -29,11 +29,7 @@ class Database extends phpLive{
         $this->password = $data["password"];
         parent::__construct();
     }
-
-    public function __get($name){
-        parent::__get($name);
-    }
-
+    
     public function __call($name, $args){
         if(preg_match("/findBy(.+)/", $name, $matches)){
             if($this->validName($matches[1])){
@@ -42,6 +38,7 @@ class Database extends phpLive{
                 throw new Exception("Invalid Column Name.");
             }
         }
+        return parent::__call($name, $args);
     }
 
     public function connect(){
