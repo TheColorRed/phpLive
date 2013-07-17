@@ -16,7 +16,8 @@ class Database extends phpLive{
             $username   = null,
             $password   = null,
             $sql        = null,
-            $queryCount = 0
+            $queryCount = 0,
+            $table      = ""
 
     ;
 
@@ -31,6 +32,25 @@ class Database extends phpLive{
 
     public function __get($name){
         parent::__get($name);
+    }
+
+    public function __call($name, $args){
+        if(preg_match("/findBy(.+)/", $name, $matches)){
+            if($this->validName($matches[1])){
+                return $this->find($matches[1], $args);
+            }
+        }
+    }
+
+    private function find($column, $args){
+        if(isset($args[1]) && !empty($args[1]) && $this->validName($args[1])){
+            $this->table = $args[1];
+        }
+        if(isset($args[1])){
+            unset($args[1]);
+        }
+        $this->select("select * from $this->table where $column = ?", $args[0]);
+        return $this;
     }
 
     public function connect(){
@@ -61,7 +81,7 @@ class Database extends phpLive{
         }
         return (object)array("query" => $query, "args"  => $args);
     }
-    
+
     public function queryCount(){
         $this->string = $this->queryCount;
         return $this;
@@ -113,6 +133,13 @@ class Database extends phpLive{
 
         $this->list = $this->sql->fetchAll();
         return $this;
+    }
+
+    private function validName($string){
+        if(preg_match("/[^a-zA-Z0-9\\\$_]+/", $string)){
+            return false;
+        }
+        return true;
     }
 
 }
