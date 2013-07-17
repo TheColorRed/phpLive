@@ -602,6 +602,16 @@ class phpLive{
         $this->functionName = __FUNCTION__;
         return $this;
     }
+    
+    public function jsonEncode(){
+        $this->string = json_encode($this->list);
+        return $this;
+    }
+    
+    public function jsonDecode(){
+        $this->list = json_decode($this->string);
+        return $this;
+    }
 
     /**
      *
